@@ -1,0 +1,378 @@
+<ion-content class="add-modal interest-add-modal">
+    <ion-item class="modal-header">
+        <ion-label>
+           {{identifire}}
+        </ion-label>
+        <div class="modal-cancel-btn">
+            <a herf="#" (click)="closeModal()"><ion-icon color="dark" ios="ios-close" md="md-close"></ion-icon></a>
+        </div>
+    </ion-item>
+    <ion-grid [ngClass]="{'disabled': form_submit_text == 'Submitting'}">
+        <form class="modal"  #addInterestModalForm="ngForm" (ngSubmit)="onSubmit(addInterestModalForm)" >
+            <div class="modal-body">
+                
+                <!-- Pay amount -->
+                <ion-row>
+                    <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4">
+                        <div [ngClass]="{'disabled':showLoading}">
+                            <ion-label position="floating" style="font-size: 14px; font: weight 600;" >Pay Amount<sup>*</sup></ion-label>
+                            <ion-input OnlyNumber="true" name="interest_pay_total" 
+                                [(ngModel)]="model.interest_pay_amount" 
+                                (ionChange)="onPayInterestDivided(model.interest_pay_amount, selectItemList)"                               
+                                (input)='onPayInterestDivided(model.interest_pay_amount, selectItemList)'
+                                required
+                                clearInput >
+                            </ion-input>
+                        </div>
+                    </ion-col>
+                    
+                </ion-row>
+
+                <!-- select interest show start -->
+                <ion-row >
+                    <ion-col size-xs="12" size-sm="12" size-md="12"  size-lg="12">
+                        <div class="uploading-info" style="margin-top: 15px; overflow-x:auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <!-- table header -->
+                                        <th>
+                                            <span>Trans Id</span>
+                                        </th>
+                                        <th>
+                                            <span>Day</span>
+                                        </th>
+                                        <th>
+                                            <span>Amount</span>
+                                        </th>
+                                        <th [hidden]="is_check_tds == 0">
+                                            {{identifire == 'Add Interest'?'Interest':'Brokerage'}}
+                                        </th>
+                                        <th [hidden]="is_check_tds == 0">
+                                            TDS
+                                        </th>
+                                        <th *ngIf="identifire == 'Add Brokerage'">
+                                            GST
+                                        </th>
+                                        <th>
+                                            Total {{identifire == 'Add Interest'?'Interest':'Brokerage'}}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of selectItemList; let i = index; let first = first;" [hidden]="showLoading">
+                                        <td>
+                                            <!--id-->
+                                            <input type="hidden" name="transaction[{{i}}][id]" [(ngModel)]="item.id">
+
+                                            <span>{{item.dgr_transaction_id}}</span>
+                                        </td>
+                                        <td>
+                                            <span>{{item.interest_days}}</span>
+                                        </td>
+                                        <td>
+                                            <span class="interestWithInput">
+                                                {{ item.interest_amt}}
+                                                <input type="hidden" name="transaction[{{i}}][transaction_current_amunt]" [(ngModel)]="item.interest_amt">
+                                            </span>
+                                        </td>
+                                        <td style="width: 150px;" [hidden]="is_check_tds == 0"> 
+                                            <span>
+                                                <!-- interest amount -->
+                                                <!-- [ngModelOptions]="{standalone: true}" -->
+                                                <ion-input 
+                                                    class="Only-view-fields due_date no-clear gst-input-field" OnlyNumber="true" 
+                                                    name="transaction[{{i}}][interest_amount]" 
+                                                    [(ngModel)]="item.interest_amount_pay"  
+                                                ></ion-input>
+                                            </span>
+                                        </td>
+                                        <td style="width: 100px;" [hidden]="is_check_tds == 0"> 
+                                            <span>
+                                                <!-- tds -->
+                                                <ion-input 
+                                                    class="Only-view-fields due_date no-clear gst-input-field" OnlyNumber="true" 
+                                                    name="transaction[{{i}}][tds_amt]" 
+                                                    [(ngModel)]="item.interest_amount_pay_tds"  >
+                                                </ion-input>
+                                            </span>
+                                        </td>
+                                        <td style="width: 80px;" *ngIf="identifire == 'Add Brokerage'"> 
+                                            <span>
+                                                <!-- GST -->
+                                                <ion-input 
+                                                    class="Only-view-fields due_date no-clear gst-input-field" OnlyNumber="true" 
+                                                    name="transaction[{{i}}][gst_amt]" 
+                                                    [(ngModel)]="item.brokerage_gst" >
+                                                </ion-input>
+                                            </span>
+                                        </td>
+                                        <td style="width: 150px;"> 
+                                            <span>
+
+                                               <!-- total interest amount -->
+                                               <ion-input 
+                                                    OnlyNumber="true" 
+                                                    name="transaction[{{i}}][total_amount]" 
+                                                    [(ngModel)]="item.totalInterestAmount1" (ngModelChange)="menualItemAmountChange(item, selectItemList)" 
+                                                    clearInput >
+                                                </ion-input>
+
+                                                <!-- only hidden -->
+                                                <!-- total interest amount -->
+                                                <ion-input  hidden OnlyNumber="true" [ngModelOptions]="{standalone: true}" [(ngModel)]="item.totalInterestAmount" (ionChange)="itemAmountChange(item, selectItemList)" clearInput ></ion-input>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr [hidden]="showLoading">
+                                        <td>
+                                            <span>
+                                                <b>Total : </b>
+                                            </span>
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <span class="interestWithInput">
+                                                <!-- {{total_sum | round }} -->
+                                                <b>{{total_sum}}</b>
+                                                
+                                            </span>
+                                        </td>
+                                        <!-- tds sum-->
+                                        <td style="width: 100px;" [hidden]="is_check_tds == 0">
+                                            {{totalSumInterestAmount}}
+                                        </td>
+                                        <!-- interest sum -->
+                                        <td style="width: 150px;" [hidden]="is_check_tds == 0">
+                                            {{totalSumTdsAmount}}
+                                        </td>
+                                        <!-- gst sum -->
+                                        <td style="width: 80px;" *ngIf="identifire == 'Add Brokerage'"> 
+                                            {{totalSumGstAmount}}
+                                        </td>
+                                        <!-- interest total sum -->
+                                        <td style="width: 150px;">
+                                            <b>{{totalSumTdsInterestAmount}}</b>
+                                        </td>
+                                    </tr>
+                                    <tr [hidden]="!showLoading" class="loading-table-data">
+                                        <td colspan="100">
+                                            <span style="font-size: 16px;">Data is loading...</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </ion-col>
+                </ion-row>
+                <!-- select interest show end -->
+
+                <!-- pay options -->
+                <ion-row class="second-row " style="margin-top: 10px;" [ngClass]="{'disabled':showLoading}">
+                    <ion-col size="12">
+                        <!-- <div class="radio-item">
+                            <input type="radio" id="ritema" value="1" [ngModelOptions]="{standalone: true}" [(ngModel)]="paymentOptions">
+                            <label for="ritema">Cash</label>
+                        </div> -->
+                        
+                        <div class="radio-item">
+                            <input type="radio" id="ritemb" value="1"  [ngModelOptions]="{standalone: true}" [(ngModel)]="paymentOptions">
+                            <label for="ritemb">Cheque</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="ritemc" value="2" [ngModelOptions]="{standalone: true}" [(ngModel)]="paymentOptions">
+                            <label for="ritemc">Online</label>
+                        </div>
+                    </ion-col>
+                    <ion-col size="12">
+                        <div [ngSwitch]="paymentOptions">
+                            <!-- <div *ngSwitchCase="'1'">
+
+                                <input type="hidden" name="payment_mode" [(ngModel)]="payment_mode_cash">
+
+                                <ion-grid>
+                                    <ion-row>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating">Pay Date<sup>*</sup></ion-label>
+
+                                                <li-ionic4-datepicker 
+                                                    name="pay_date" 
+                                                    [(ngModel)]="model.cash.setStartdate"
+                                                    [inputDateConfig]="datePickerObj" 
+                                                    (ngModelChange)="myFunction()"
+                                                    required
+                                                ></li-ionic4-datepicker>
+
+                                            </div>
+                                        </ion-col>
+                                    </ion-row>
+                                </ion-grid>
+                            </div> -->
+                            <div *ngSwitchCase="'1'">
+
+                                <!-- hidden -->
+                                <input type="hidden" name="payment_mode" [(ngModel)]="payment_mode_cheque">
+
+                                <ion-grid>
+                                    <ion-row>
+                                        <!-- <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating">TDS Amount</ion-label>
+                                                <ion-input OnlyNumber="true" name="tds_amt" [(ngModel)]="model.tds_amount" clearInput ></ion-input>
+                                            </div>
+                                        </ion-col> -->
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating">Pay Date<sup>*</sup></ion-label>
+
+                                                <!-- <ion-input class="date-picker" readonly 
+                                                    name="pay_date"
+                                                    [(ngModel)]="model.setStartdate" 
+                                                    [liIonic4Datepicker]="datePickerObj" 
+                                                    (ionchange)="myFunction()"
+                                                    required
+                                                >
+                                                </ion-input> -->
+
+                                                <li-ionic4-datepicker 
+                                                    name="pay_date" 
+                                                    [(ngModel)]="model.cheque.setStartdate"
+                                                    [inputDateConfig]="datePickerObj" 
+                                                    (ngModelChange)="myFunction()"
+                                                    required
+                                                ></li-ionic4-datepicker>
+
+                                            </div>
+                                        </ion-col>
+                                        <!-- <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating">Deposit Date<sup>*</sup></ion-label>
+                                                <li-ionic4-datepicker 
+                                                    name="deposit_date" 
+                                                    [(ngModel)]="model.cheque.deposit_date"
+                                                    [inputDateConfig]="datePickerObj" 
+                                                    (ngModelChange)="myFunction()"
+                                                    required
+                                                ></li-ionic4-datepicker>
+                                            </div>
+                                        </ion-col> -->
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating">Cheque No<sup>*</sup></ion-label>
+                                                <ion-input name="intrest_cheque_no" [(ngModel)]="model.cheque.cheque_no" clearInput required></ion-input>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating">Account Holder Name<sup>*</sup></ion-label>
+                                                <ion-input name="account_name" [(ngModel)]="model.cheque.account_name" required clearInput ></ion-input>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating">Account Number</ion-label>
+                                                <ion-input  OnlyNumber="true" type="tel" name="account_no" [(ngModel)]="model.cheque.account_no"  clearInput ></ion-input>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating">Bank<sup>*</sup></ion-label>
+                                                <ion-input name="bank" [(ngModel)]="model.cheque.bank" required clearInput ></ion-input>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating">Branch</ion-label>
+                                                <ion-input name="branch" [(ngModel)]="model.cheque.branch" clearInput ></ion-input>
+                                            </div>
+                                        </ion-col>
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
+                            <div *ngSwitchCase="'2'">
+
+                                <!-- hidden -->
+                                <input type="hidden" name="payment_mode" [(ngModel)]="payment_mode_online">
+
+                                <ion-grid>
+                                    <ion-row>
+                                        <!-- <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating">TDS Amount</ion-label>
+                                                <ion-input OnlyNumber="true" name="tds_amt" [(ngModel)]="model.tds_amount" clearInput ></ion-input>
+                                            </div>
+                                        </ion-col> -->
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating">Pay Date<sup>*</sup></ion-label>
+
+                                                <!-- <ion-input class="date-picker" readonly 
+                                                    name="pay_date"
+                                                    [(ngModel)]="model.setStartdate" 
+                                                    [liIonic4Datepicker]="datePickerObj" 
+                                                    (ionchange)="myFunction()"
+                                                    required
+                                                >
+                                                </ion-input> -->
+
+                                                <li-ionic4-datepicker 
+                                                    name="pay_date" 
+                                                    [(ngModel)]="model.online.setStartdate"
+                                                    [inputDateConfig]="datePickerObj" 
+                                                    (ngModelChange)="myFunction()"
+                                                    required
+                                                ></li-ionic4-datepicker>
+
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating">Account Holder Name</ion-label>
+                                                <ion-input name="account_name" [(ngModel)]="model.online.account_name" clearInput ></ion-input>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating">Account Number</ion-label>
+                                                <ion-input  OnlyNumber="true" type="tel" name="account_no" [(ngModel)]="model.online.account_no"  clearInput ></ion-input>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating">Bank<sup>*</sup></ion-label>
+                                                <ion-input name="bank" [(ngModel)]="model.online.bank" required clearInput ></ion-input>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating">Bank Transaction Id<sup>*</sup></ion-label>
+                                                <ion-input name="bank_transaction_id" [(ngModel)]="model.online.bank_transaction_id" required clearInput ></ion-input>
+                                            </div>
+                                        </ion-col>
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
+                        </div>
+                    </ion-col>
+                </ion-row>
+
+            </div>
+            <!-- submit button -->
+            <ion-row>
+                <ion-col class="ion-text-center modal-submit modal-footer" size-xs="12" size-sm="12" size-md="12"  size-lg="12" >
+                    <ion-button color="secondary" size="default" [ngClass]="{'disabled': disableSubmitButton}"
+                    type="submit" [disabled]="!addInterestModalForm.valid" 
+                    color="secondary" tooltip="Save" flow="up">
+                        <ion-spinner *ngIf="form_submit_text == 'Submitting'" name="crescent"></ion-spinner> 
+                        <span class="submitText">{{form_submit_text}}</span>
+                    </ion-button>
+                    <ion-button (click)="closeModal()" size="default" fill="clear" color="danger">
+                        <ion-icon name="close"></ion-icon>
+                        Cancel
+                    </ion-button>
+                </ion-col>
+            </ion-row>
+        </form>
+    </ion-grid>
+</ion-content>

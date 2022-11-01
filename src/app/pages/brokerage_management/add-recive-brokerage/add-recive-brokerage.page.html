@@ -1,0 +1,716 @@
+<!-- common header show -->
+<common-header></common-header>
+  
+<ion-content id="page-wrapper" class="page-wrapper transaction-view">
+    <div class="page-inner">
+        <ion-row class="width-100 sub-header nomargin nopadding">
+            <ion-col size-xs="7" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+                <div class = "sub-header-color pull-left width-100 font-size-18 vertical-middle">
+                    <span>{{actionHeaderText}} Received Brokerage</span>
+                </div>
+            </ion-col>
+            <ion-col size-xs="5" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+                <div class = "sub-header-color width-100 text-right">
+                <span class="font-size-13"> {{curentDate | date:'dd MMM yyy'}} <i>|</i> {{curentDate | date:'h:mm a '}}</span>
+                </div>
+            </ion-col>
+        </ion-row>
+        <div class="add-new-page-body" [ngClass]="{'disabled': form_submit_text == 'Submitting'}">
+
+            <!-- loading -->
+            <div class="edit-loading-page" *ngIf="editLoading">
+                <span>
+                    <ion-spinner name="lines"></ion-spinner>
+                </span>
+            </div>
+
+            <form  #addForm="ngForm" (ngSubmit)="onSubmit(addForm)" >
+
+              <div class="company-info">
+                    <mat-accordion>
+
+                        <!-- Basic Information  -->
+                        <mat-expansion-panel style="display:none;" [expanded]="step === 3" (opened)="setStep(3)" hideToggle>               
+                            <mat-expansion-panel-header>
+                                <mat-panel-title class="font-size-18">
+                                    Basic Information
+                                </mat-panel-title>
+                                <span class="open-close-btn">
+                                    <i class="down material-icons">keyboard_arrow_down</i>
+                                    <i class="up material-icons">keyboard_arrow_up</i>
+                                </span>
+                            </mat-expansion-panel-header>
+                            <div class="company-info-body">
+                                <ion-grid class="first-table">
+                                    <ion-row>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="principle material-icons">account_box</i> 
+                                                <span class="text-name-bold">Transaction ID :</span>
+                                                <span><b>{{transactionInfo?.dgr_transaction_id}}</b></span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="account material-icons">account_circle</i> 
+                                                <span class="text-name-bold">Account :</span>
+                                                <span>{{transactionInfo?.account_branch?.name}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="lender material-icons">group</i> 
+                                                <span class="text-name-bold">Lender Group :</span>
+                                                <span>{{transactionInfo?.lgroup?.name}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="lender material-icons">person</i> 
+                                                <span class="text-name-bold">Lender :</span>
+                                                <span>{{transactionInfo?.lender?.name}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="borrower material-icons">group</i> 
+                                                <span class="text-name-bold">Borrower Group :</span>
+                                                <span>{{transactionInfo?.bgroup?.name}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="borrower material-icons">person</i> 
+                                                <span class="text-name-bold">Borrower :</span>
+                                                <span>{{transactionInfo?.brrower?.name}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="principle material-icons">person_outline</i> 
+                                                <span class="text-name-bold">Principle :</span>
+                                                <span>{{transactionInfo?.principle}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="chart material-icons">assessment</i> 
+                                                <span class="text-name-bold">Monthly Interest Rate (%) :</span>
+                                                <span>{{transactionInfo?.interest_rate}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="date material-icons">date_range</i> 
+                                                <span class="text-name-bold">Interest Cycle :</span>
+                                                <span>{{transactionInfo?.interest_cycle}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="transactionInfo?.cycle_days > 0">
+                                            <div class="view-element">
+                                                <i class="date material-icons">today</i> 
+                                                <span class="text-name-bold">Cycle Days :</span>
+                                                <span>{{transactionInfo?.cycle_days}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="transactionInfo?.cycle_days == 0">
+                                            <div class="view-element">
+                                                <i class="date material-icons">today</i> 
+                                                <span class="text-name-bold">Cycle Months :</span>
+                                                <span>{{transactionInfo?.cycle_month}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="date material-icons">calendar_today</i> 
+                                                <span class="text-name-bold">Due Date:</span>
+                                                <span>{{transactionInfo?.start_date | date:'dd MMM yyy'}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="date material-icons">calendar_today</i> 
+                                                <span class="text-name-bold">Due Date :</span>
+                                                <span>{{transactionInfo?.end_date | date:'dd MMM yyy'}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="date material-icons">today</i> 
+                                                <span class="text-name-bold">No. of Days :</span>
+                                                <span>{{transactionInfo?.no_of_days}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="date material-icons">date_range</i> 
+                                                <span class="text-name-bold">Principle Return Date :</span>
+                                                <span>{{transactionInfo?.prncpl_rtrn_dt | date:'dd MMM yyy'}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="chart material-icons">insert_chart_outlined</i> 
+                                                <span class="text-name-bold">Monthly Brokerage Rate (%) :</span>
+                                                <span>{{transactionInfo?.brokerage}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="chart material-icons">insert_chart_outlined</i> 
+                                                <span class="text-name-bold">TDS (%) :</span>
+                                                <span>{{transactionInfo?.tds}}</span>
+                                            </div>
+                                        </ion-col>
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
+                        </mat-expansion-panel>
+                        
+                        <!-- Detailed Informations Related to PDC -->
+                        <mat-expansion-panel style="display:none;" [expanded]="step === 2" (opened)="setStep(2)" hideToggle *ngIf="pdcsInfo">             
+                            <mat-expansion-panel-header>
+                                <mat-panel-title class="font-size-18">
+                                    Detailed Informations Related to PDC
+                                </mat-panel-title>
+                                <span class="open-close-btn">
+                                    <i class="down material-icons">keyboard_arrow_down</i>
+                                    <i class="up material-icons">keyboard_arrow_up</i>
+                                </span>
+                            </mat-expansion-panel-header>
+                            <div class="company-info-body">
+                                <ion-grid class="first-table">
+                                    <ion-row>
+                                        <!-- <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="pdcsInfo?.bank_acc">
+                                            <div class="view-element">
+                                                <i class="account material-icons">account_balance</i> 
+                                                <span class="text-name-bold">Bank Account :</span>
+                                                <span>{{pdcsInfo?.bank_acc}}</span>
+                                            </div>
+                                        </ion-col> -->
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="pdcsInfo?.routing">
+                                            <div class="view-element">
+                                                <i class="lender material-icons">rounded_corner</i> 
+                                                <span class="text-name-bold">Routing :</span>
+                                                <span>{{pdcsInfo?.routing}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="pdcsInfo?.bank_name">
+                                            <div class="view-element">
+                                                <i class="account material-icons">account_balance</i> 
+                                                <span class="text-name-bold">Bank Name :</span>
+                                                <span>{{pdcsInfo?.bank_name}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="pdcsInfo?.branch_name">
+                                            <div class="view-element">
+                                                <i class="account material-icons">account_balance</i> 
+                                                <span class="text-name-bold">Branch Name :</span>
+                                                <span>{{pdcsInfo?.branch_name}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="pdcsInfo?.docket">
+                                            <div class="view-element">
+                                                <i class="borrower material-icons">card_giftcard</i> 
+                                                <span class="text-name-bold">Docket :</span>
+                                                <span>{{pdcsInfo?.docket}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="pdcsInfo?.cheque_no">
+                                            <div class="view-element">
+                                                <i class="principle material-icons">payment</i> 
+                                                <span class="text-name-bold">Cheque No :</span>
+                                                <span>{{pdcsInfo?.cheque_no}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="pdcsInfo?.check_date">
+                                            <div class="view-element">
+                                                <i class="date material-icons">today</i> 
+                                                <span class="text-name-bold">Cheque Date :</span>
+                                                <span>{{pdcsInfo?.check_date | date:'dd MMM yyy'}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="pdcsInfo?.check_amt">
+                                            <div class="view-element">
+                                                <i class="principle material-icons">money</i> 
+                                                <span class="text-name-bold">Cheque Amount :</span>
+                                                <span>{{pdcsInfo?.check_amt}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="pdcsInfo?.comment">
+                                            <div class="view-element">
+                                                <i class="date material-icons">insert_comment</i> 
+                                                <span class="text-name-bold">Comments :</span>
+                                                <span>{{pdcsInfo?.comment}}</span>
+                                            </div>
+                                        </ion-col>
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
+                        </mat-expansion-panel>
+
+                        <!-- Payment Details for (reject) -->
+                        <mat-expansion-panel style="display:none;" [expanded]="step === 1" (opened)="setStep(1)" hideToggle *ngIf="parms_action_name == 'reject'">             
+                            <mat-expansion-panel-header>
+                                <mat-panel-title class="font-size-18">
+                                    Payment Details
+                                </mat-panel-title>
+                                <span class="open-close-btn">
+                                    <i class="down material-icons">keyboard_arrow_down</i>
+                                    <i class="up material-icons">keyboard_arrow_up</i>
+                                </span>
+                            </mat-expansion-panel-header>
+                            <div class="company-info-body">
+                                <ion-grid class="first-table">
+                                    <ion-row>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="principle material-icons">person_outline</i> 
+                                                <span class="text-name-bold">Total Amount :</span>
+                                                <span>{{model.interest_total_amount}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="chart material-icons">insert_chart_outlined</i> 
+                                                <span class="text-name-bold">TDS Amount :</span>
+                                                <span>{{model.interest_amount_pay_tds}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                                            <div class="view-element">
+                                                <i class="chart material-icons">assessment</i> 
+                                                <span class="text-name-bold">Brokerage Amount :</span>
+                                                <span>{{model.interest_amount_pay}}</span>
+                                            </div>
+                                        </ion-col>
+
+                                       <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="paymentreceivedInfo?.payment_mode">
+                                            <div class="view-element">
+                                                <i class="account material-icons">account_balance</i> 
+                                                <span class="text-name-bold">Payment Mode :</span>
+                                                <span>{{paymentreceivedInfo?.payment_mode}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="paymentreceivedInfo?.pay_date">
+                                            <div class="view-element">
+                                                <i class="borrower material-icons">calendar_today</i> 
+                                                <span class="text-name-bold">Pay Date :</span>
+                                                <span>{{paymentreceivedInfo?.pay_date | date:'dd MMM yyy'}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <!-- <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="paymentreceivedInfo?.deposit_date">
+                                            <div class="view-element">
+                                                <i class="borrower material-icons">calendar_today</i> 
+                                                <span class="text-name-bold">Deposit Date :</span>
+                                                <span>{{paymentreceivedInfo?.deposit_date | date:'dd MMM yyy'}}</span>
+                                            </div>
+                                        </ion-col> -->
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="paymentreceivedInfo?.intrest_cheque_no">
+                                            <div class="view-element">
+                                                <i class="principle material-icons">payment</i> 
+                                                <span class="text-name-bold">Cheque No :</span>
+                                                <span>{{paymentreceivedInfo?.intrest_cheque_no}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="paymentreceivedInfo?.account_name">
+                                            <div class="view-element">
+                                                <i class="date material-icons">person_outline</i> 
+                                                <span class="text-name-bold">Account Holder Name :</span>
+                                                <span>{{paymentreceivedInfo?.account_name}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="paymentreceivedInfo?.account_no">
+                                            <div class="view-element">
+                                                <i class="principle material-icons">money</i> 
+                                                <span class="text-name-bold">Account Number :</span>
+                                                <span>{{paymentreceivedInfo?.account_no}}</span>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="paymentreceivedInfo?.bank">
+                                            <div class="view-element">
+                                                <i class="date material-icons">account_balance</i> 
+                                                <span class="text-name-bold">Bank :</span>
+                                                <span>{{paymentreceivedInfo?.bank}}</span>
+                                            </div>
+                                        </ion-col> 
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="paymentreceivedInfo?.branch">
+                                            <div class="view-element">
+                                                <i class="date material-icons">account_balance</i> 
+                                                <span class="text-name-bold">Branch :</span>
+                                                <span>{{paymentreceivedInfo?.branch}}</span>
+                                            </div>
+                                        </ion-col> 
+                                        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="paymentreceivedInfo?.bank_transaction_id">
+                                            <div class="view-element">
+                                                <i class="date material-icons">money</i> 
+                                                <span class="text-name-bold">Bank transaction Id :</span>
+                                                <span>{{paymentreceivedInfo?.bank_transaction_id}}</span>
+                                            </div>
+                                        </ion-col> 
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
+                        </mat-expansion-panel>
+
+                        <!-- reject option for (reject)  -->
+                        <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle *ngIf="parms_action_name == 'reject'">             
+                            <mat-expansion-panel-header>
+                                <mat-panel-title class="font-size-18">
+                                    Reject Option
+                                </mat-panel-title>
+                                <span class="open-close-btn">
+                                    <i class="down material-icons">keyboard_arrow_down</i>
+                                    <i class="up material-icons">keyboard_arrow_up</i>
+                                </span>
+                            </mat-expansion-panel-header>
+                            <div class="company-info-body">
+                                <ion-grid >
+                                    <ion-row>
+                                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4">
+                                                <div>
+                                                    <input *ngIf="transactionInfo?.id" type='hidden' name="reject_tran_id" [(ngModel)]="transactionInfo.id">
+                                                    <ion-label position="floating">Date<sup>*</sup></ion-label>
+
+                                                    <!-- <ion-input class="date-picker" readonly 
+                                                        name="pay_date"
+                                                        [(ngModel)]="model.setStartdate" 
+                                                        [liIonic4Datepicker]="datePickerObj" 
+                                                        (ionchange)="myFunction()"
+                                                        required
+                                                    >
+                                                    </ion-input> -->
+
+                                                    <li-ionic4-datepicker 
+                                                    name="reject_date" 
+                                                    [(ngModel)]="model.rejectDate"
+                                                    [inputDateConfig]="datePickerObj" 
+                                                    (ngModelChange)="myFunction()"
+                                                    required
+                                                    ></li-ionic4-datepicker>
+
+                                                    <!-- for edit -->
+                                                    <input type="hidden" name="_method" [(ngModel)]="onEditField">
+
+                                                    <input type="hidden" name="pymnt_status" [(ngModel)]="pymnt_status_field">
+
+                                                </div>
+                                            </ion-col>
+                                            <ion-col size="12">
+                                                <div>
+                                                    <ion-label position="floating">Reason <sup>*</sup></ion-label>
+                                                    <ion-textarea auto-grow="true" name="reject_reason" [(ngModel)]="model.reject_reason" required clearInput></ion-textarea>
+                                                </div>
+                                            </ion-col>
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
+                        </mat-expansion-panel>
+
+                        <!-- Payment option for (edit)-->
+                        <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle *ngIf="parms_action_name == 'edit'">             
+                            <mat-expansion-panel-header>
+                                <mat-panel-title class="font-size-18">
+                                        Payment option
+                                </mat-panel-title>
+                                <span class="open-close-btn">
+                                    <i class="down material-icons">keyboard_arrow_down</i>
+                                    <i class="up material-icons">keyboard_arrow_up</i>
+                                </span>
+                            </mat-expansion-panel-header>
+                            <div class="company-info-body">
+                                <ion-grid>
+                                    <!-- Pay amount -->
+                                    <ion-row>
+                                        <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating" style="font-size: 14px; font: weight 600;" >Total Amount<sup>*</sup></ion-label>
+                                                <ion-input OnlyNumber="true" name="total_amount" 
+                                                    [(ngModel)]="model.interest_total_amount" 
+                                                     debounce="500"
+                                                    required
+                                                    clearInput >
+                                                </ion-input>
+
+                                                <!-- for edit -->
+                                                <input type="hidden" name="_method" [(ngModel)]="onEditField">
+                                                
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating" style="font-size: 14px; font: weight 600;" >TDS Amount<sup>*</sup></ion-label>
+                                                <ion-input OnlyNumber="true" name="tds_amt" 
+                                                    [(ngModel)]="model.interest_amount_pay_tds" 
+                                                    debounce="500"
+                                                    required
+                                                    clearInput >
+                                                </ion-input>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating" style="font-size: 14px; font: weight 600;" >Brokerage Amount<sup>*</sup></ion-label>
+                                                <ion-input OnlyNumber="true" name="interest_amount" 
+                                                    [(ngModel)]="model.interest_amount_pay" 
+                                                        debounce="500"
+                                                    required
+                                                    clearInput >
+                                                </ion-input>
+                                            </div>
+                                        </ion-col>
+                                        <!-- <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                                            <div>
+                                                <ion-label position="floating" style="font-size: 14px; font: weight 600;" >Interest Pay Days<sup>*</sup></ion-label>
+                                                <ion-input OnlyNumber="true" name="interest_pay_days" 
+                                                    [(ngModel)]="model.interest_pay_days" 
+                                                    debounce="500"
+                                                    required
+                                                    clearInput >
+                                                </ion-input>
+                                            </div>
+                                        </ion-col> -->
+                                    </ion-row>
+
+                                    <!-- mode -->
+                                    <ion-row class="second-row " style="margin-top: 10px;">
+                                        <ion-col size="12">
+                                        <!-- <div class="radio-item">
+                                            <input type="radio" id="c1" value="1" [ngModelOptions]="{standalone: true}" [(ngModel)]="paymentOptions">
+                                            <label for="c1">Cash</label>
+                                        </div> -->
+                                        
+                                        <div class="radio-item">
+                                            <input type="radio" id="c2" value="1"  [ngModelOptions]="{standalone: true}" [(ngModel)]="paymentOptions">
+                                            <label for="c2">Cheque</label>
+                                        </div>
+                                        <div class="radio-item">
+                                            <input type="radio" id="c3" value="2" [ngModelOptions]="{standalone: true}" [(ngModel)]="paymentOptions">
+                                            <label for="c3">Online</label>
+                                        </div>
+                                        </ion-col>
+                                        <ion-col size="12">
+                                            <div [ngSwitch]="paymentOptions">
+                                                <!-- <div *ngSwitchCase="'1'">
+                                                    <input type="hidden" name="payment_mode" [(ngModel)]="payment_mode_cash">
+                    
+                                                    <ion-grid>
+                                                        <ion-row>
+                                                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                                <div>
+                                                                    <ion-label position="floating">Pay Date<sup>*</sup></ion-label>
+
+                                                                    <li-ionic4-datepicker 
+                                                                    name="pay_date" 
+                                                                    [(ngModel)]="model.cash.setStartdate"
+                                                                    [inputDateConfig]="datePickerObj" 
+                                                                    (ngModelChange)="myFunction()"
+                                                                    required
+                                                                ></li-ionic4-datepicker>
+
+                                                                </div>
+                                                            </ion-col>
+                                                        </ion-row>
+                                                    </ion-grid>
+                                                </div> -->
+                                                <div *ngSwitchCase="'1'">
+                    
+                                                    <!-- hidden -->
+                                                    <input type="hidden" name="payment_mode" [(ngModel)]="payment_mode_cheque">
+                    
+                                                    <ion-grid>
+                                                        <ion-row>
+                                                            <!-- <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                                <div>
+                                                                    <ion-label position="floating">TDS Amount</ion-label>
+                                                                    <ion-input OnlyNumber="true" name="tds_amt" [(ngModel)]="model.tds_amount" clearInput ></ion-input>
+                                                                </div>
+                                                            </ion-col> -->
+                                                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                                <div>
+                                                                    <ion-label position="floating">Pay Date<sup>*</sup></ion-label>
+
+                                                                    <!-- <ion-input class="date-picker" readonly 
+                                                                        name="pay_date"
+                                                                        [(ngModel)]="model.setStartdate" 
+                                                                        [liIonic4Datepicker]="datePickerObj" 
+                                                                        (ionchange)="myFunction()"
+                                                                        required
+                                                                    >
+                                                                    </ion-input> -->
+
+                                                                    <li-ionic4-datepicker 
+                                                                    name="pay_date" 
+                                                                    [(ngModel)]="model.cheque.setStartdate"
+                                                                    [inputDateConfig]="datePickerObj" 
+                                                                    (ngModelChange)="myFunction()"
+                                                                    required
+                                                                ></li-ionic4-datepicker>
+
+                                                                </div>
+                                                            </ion-col>
+                                                            <!-- <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                                <div>
+                                                                    <ion-label position="floating">Deposit Date<sup>*</sup></ion-label>
+                    
+                                                                    <li-ionic4-datepicker 
+                                                                        name="deposit_date" 
+                                                                        [(ngModel)]="model.cheque.deposit_date"
+                                                                        [inputDateConfig]="datePickerObj" 
+                                                                        (ngModelChange)="myFunction()"
+                                                                        required
+                                                                    ></li-ionic4-datepicker>
+                    
+                                                                </div>
+                                                            </ion-col> -->
+                                                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                                <div>
+                                                                    <ion-label position="floating">Cheque No<sup>*</sup></ion-label>
+                                                                    <ion-input name="intrest_cheque_no" [(ngModel)]="model.cheque.cheque_no" clearInput required></ion-input>
+                                                                </div>
+                                                            </ion-col>
+                                                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                                <div>
+                                                                    <ion-label position="floating">Account Holder Name<sup>*</sup></ion-label>
+                                                                    <ion-input name="account_name" [(ngModel)]="model.cheque.account_name" required clearInput ></ion-input>
+                                                                </div>
+                                                            </ion-col>
+                                                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                                <div>
+                                                                    <ion-label position="floating">Account Number<sup>*</sup></ion-label>
+                                                                    <ion-input
+                                                                    OnlyNumber="true" type="tel"
+                                                                    name="account_no" [(ngModel)]="model.cheque.account_no" required clearInput ></ion-input>
+                                                                </div>
+                                                            </ion-col>
+                                                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                                <div>
+                                                                    <ion-label position="floating">Bank<sup>*</sup></ion-label>
+                                                                    <ion-input name="bank" [(ngModel)]="model.cheque.bank" required clearInput ></ion-input>
+                                                                </div>
+                                                            </ion-col>
+                                                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                                <div>
+                                                                    <ion-label position="floating">Branch</ion-label>
+                                                                    <ion-input name="branch" [(ngModel)]="model.cheque.branch" clearInput ></ion-input>
+                                                                </div>
+                                                            </ion-col>
+                                                        </ion-row>
+                                                    </ion-grid>
+                                                </div>
+                                                <div *ngSwitchCase="'2'">
+                    
+                                                    <!-- hidden -->
+                                                    <input type="hidden" name="payment_mode" [(ngModel)]="payment_mode_online">
+                    
+                                                    <ion-grid>
+                                                        <ion-row>
+                                                            <!-- <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                                <div>
+                                                                    <ion-label position="floating">TDS Amount</ion-label>
+                                                                    <ion-input OnlyNumber="true" name="tds_amt" [(ngModel)]="model.tds_amount" clearInput ></ion-input>
+                                                                </div>
+                                                            </ion-col> -->
+                                                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                                <div>
+                                                                    <ion-label position="floating">Pay Date<sup>*</sup></ion-label>
+
+                                                                    <!-- <ion-input class="date-picker" readonly 
+                                                                        name="pay_date"
+                                                                        [(ngModel)]="model.setStartdate" 
+                                                                        [liIonic4Datepicker]="datePickerObj" 
+                                                                        (ionchange)="myFunction()"
+                                                                        required
+                                                                    >
+                                                                    </ion-input> -->
+
+                                                                    <li-ionic4-datepicker 
+                                                                    name="pay_date" 
+                                                                    [(ngModel)]="model.online.setStartdate"
+                                                                    [inputDateConfig]="datePickerObj" 
+                                                                    (ngModelChange)="myFunction()"
+                                                                    required
+                                                                ></li-ionic4-datepicker>
+
+                                                                </div>
+                                                            </ion-col>
+                                                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                                <div>
+                                                                    <ion-label position="floating">Account Holder Name</ion-label>
+                                                                    <ion-input name="account_name" [(ngModel)]="model.online.account_name" clearInput ></ion-input>
+                                                                </div>
+                                                            </ion-col>
+                                                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                                <div>
+                                                                    <ion-label position="floating">Account Number<sup>*</sup></ion-label>
+                                                                    <ion-input 
+                                                                    OnlyNumber="true" type="tel"
+                                                                    name="account_no" [(ngModel)]="model.online.account_no" clearInput required ></ion-input>
+                                                                </div>
+                                                            </ion-col>
+                                                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                                <div>
+                                                                    <ion-label position="floating">Bank <sup>*</sup></ion-label>
+                                                                    <ion-input name="bank" [(ngModel)]="model.online.bank" clearInput required></ion-input>
+                                                                </div>
+                                                            </ion-col>
+                                                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                                <div>
+                                                                    <ion-label position="floating">Branch</ion-label>
+                                                                    <ion-input name="branch" [(ngModel)]="model.online.branch" clearInput ></ion-input>
+                                                                </div>
+                                                            </ion-col>
+                                                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                            <div>
+                                                                <ion-label position="floating">Bank Transaction Id<sup>*</sup></ion-label>
+                                                                <ion-input name="bank_transaction_id" [(ngModel)]="model.online.bank_transaction_id" required clearInput ></ion-input>
+                                                            </div>
+                                                        </ion-col>
+                                                        </ion-row>
+                                                    </ion-grid>
+                                                </div>
+                                            </div>
+                                        </ion-col>
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
+                        </mat-expansion-panel>
+
+                    </mat-accordion>
+                </div>
+                <div class="form-button-section">
+                  <ion-grid>
+                      <ion-row>
+                          <ion-col class="ion-text-center" size-xs="12" size-sm="12" size-md="12"  size-lg="12">
+                              <!-- <ion-button color="danger" size="default" tooltip="Reload" (click)="reloadPageAlert()">
+                                  Reload
+                              </ion-button> -->
+                              <ion-button (click)="clickButtonType('Save')" color="secondary" size="default"
+                              type="submit" [disabled]="!addForm.valid" 
+                              color="secondary" tooltip="Save" flow="up">
+                                  <ion-spinner *ngIf="form_submit_text_save == 'Submitting'" name="crescent"></ion-spinner> 
+                                  <span class="submitText">{{form_submit_text_save}}</span>
+                              </ion-button>
+                              <!-- <ion-button (click)="clickButtonType('Save-add-another')" color="secondary" size="default"
+                                  type="submit" [disabled]="!addForm.valid" 
+                                  color="secondary" tooltip="Save & Add Another" flow="up">
+                                  <ion-spinner *ngIf="form_submit_text_save_another == 'Submitting'" name="crescent"></ion-spinner> 
+                                  <span class="submitText">
+                                      <span class="submitText">{{form_submit_text_save_another}}</span>
+                                  </span>
+                              </ion-button> -->
+                              <ion-button size="default" fill="clear" color="danger" tooltip="Cancel" flow="up" [routerLink]="['/', 'recived-brokerage-list']">
+                                  <ion-icon name="close"></ion-icon>
+                                  Cancel
+                              </ion-button>
+                          </ion-col>
+                      </ion-row>
+                  </ion-grid>
+                </div>
+            </form>
+        </div>
+    </div>
+</ion-content>
+
+<!-- common footer show -->
+<common-footer></common-footer>

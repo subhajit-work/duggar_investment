@@ -1,0 +1,12 @@
+<ion-list class="select-pop">
+  <ion-item *ngFor="let th of tableheaderDataDropdown">
+      {{th.display_name}}
+      <ion-checkbox class="margin-top-10 margin-bottom-10" name="checkbox_name" [(ngModel)]="th.is_checked"  slot="start" (ionChange)="isColumnSelection(th, $event)" ></ion-checkbox>
+  </ion-item>
+  <ion-item id="select-button">
+    <ion-button class="width-50" (click)="resetSelectColumnPopover()">RESET <ion-icon slot="end" name="refresh"></ion-icon></ion-button>
+    <ion-button class="width-50" (click)="closeSelectColumnPopover()" >DONE <ion-icon slot="end" name="checkmark"></ion-icon></ion-button>
+  </ion-item>
+</ion-list>
+  
+  

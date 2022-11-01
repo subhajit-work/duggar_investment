@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <!-- <ion-title>Transaction Control</ion-title> -->
+    <ion-buttons slot="start"> 
+      <ion-menu-button auto-hide="true" ></ion-menu-button>
+      <!-- <ion-icon (click)="toggleMenu()" name="menu" class="menu-buton-destop"></ion-icon> -->
+    </ion-buttons>
+
+    <ion-buttons slot="end" *ngIf="get_user_dtls">
+      <div class="logout-dropdown">
+          <button mat-button [matMenuTriggerFor]="menu1">
+            <!-- <img class="img-scale" src="../../../assets/images/avatar.jpg" /> -->
+            <span *ngIf="loadingShow">
+              <ion-spinner style="width: 100px; position: relative; top: 6px;" name="crescent" color="primary"></ion-spinner>
+            </span>
+            <span *ngIf="!loadingShow">
+              <img *ngIf="get_user_dtls?.profile" class="img-scale" src="{{main_url}}/{{get_user_dtls.profile}}" />
+              <img *ngIf="!get_user_dtls?.profile" class="img-scale" src="assets/images/noimage.jpg" />
+              <span class="welcome-text">Welcome</span>
+              <span class="username">{{get_user_dtls?.full_name}} {{get_user_dtls?.name}} </span>
+            </span>
+            <mat-icon class="rotate_90">play_arrow</mat-icon>
+          </button>
+          <mat-menu #menu1="matMenu" xPosition="before">
+            <ion-grid class="extended logout dropdown-menu" style="width: 250px;">
+              <ion-row class="dropdown-menu-content">
+                <!-- <ion-col class="dropdown-menu-item ion-float-left width-33" role="button" tabindex="0">
+                  <div class="dropdown-item-inner pointer ion-text-center  full-width" (click)="changePasswordOpenModal('profile_update_modal', '', '');">
+                    <ion-icon class="width-100 ran-icon" name="person"></ion-icon>
+                    Profile 
+                  </div>
+                </ion-col> -->
+                <ion-col *ngIf="get_user_type == 'group' " class="dropdown-menu-item ion-float-left width-33 ion-text-center" role="button" tabindex="0">
+                  <div class="dropdown-item-inner pointer ion-text-center" (click)="changePasswordOpenModal('profile_update_modal', get_user_dtls, '');">
+                    <ion-icon class="width-100 ran-icon" name="person"></ion-icon>
+                    Profile 
+                  </div>
+                </ion-col>
+                <ion-col class="dropdown-menu-item ion-float-left width-33 ion-text-center" role="button" tabindex="0">
+                  <div class="dropdown-item-inner pointer ion-text-center full-width" (click)="changePasswordOpenModal('change_password_modal', get_user_dtls, '');">
+                    <ion-icon class="width-100 ran-icon" name="briefcase"></ion-icon> 
+                    Change password 
+                  </div>
+                </ion-col>
+              </ion-row>
+              <ion-row class="dropdown-menu-content">
+                  <ion-col class="dropdown-menu-lastitem" (click)="logOutUser()">
+                      <div class="dropdown-item-inner pointer ion-text-center" role="button" tabindex="0"><ion-icon class="width-100 ran-icon1" name="key"></ion-icon> Log Out </div>
+                  </ion-col>                
+              </ion-row>
+            </ion-grid>
+          </mat-menu>
+      </div>
+    </ion-buttons>
+    
+  </ion-toolbar>
+</ion-header>

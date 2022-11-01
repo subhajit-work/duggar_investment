@@ -1,0 +1,132 @@
+<ion-app>
+    <ion-split-pane when="lg">
+      <!------------ Side Menu Starts --------------->
+        <ion-menu class="side-main-menu" contentId="menucontent">
+          <!------------ Menu Header Starts ------------->
+          <ion-header>
+            <ion-toolbar >
+              <ion-title>
+                <div class="logo header_logo">
+                    <img alt="logo" src="assets/images/transaction_logo.png">
+                  </div>
+              </ion-title>
+            </ion-toolbar>
+          </ion-header>
+          <!------------------ Menu Header ends -------- -->
+          <ion-content color="gray">
+            <div class="text-center" >
+              
+              <!-- menu loading show-->
+              <div class="menu-loading" *ngIf="userInfodDataLoading">
+                <ion-progress-bar type="indeterminate" reversed="true"></ion-progress-bar>
+                <div class="menu-loading-inner">
+                  <ion-spinner name="dots" color="light" style="zoom:2.0;"></ion-spinner>
+                </div>
+              </div>
+                
+              <!-------------------super admin Menu Content Starts ------------>
+                <mat-accordion color="primary" class="mat-menu display-inline-block margin-top-10" *ngIf="!userInfodDataLoading && get_user_type != 'group'">
+                  <mat-expansion-panel class="margin-bottom-5" *ngFor="let p of menuPages; last as isLast; first as isFirst" [expanded]="p.isOpen"  #example routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+
+                      <!-- hideToggle="true" #iconanchor -->
+                      <!-- no + - -->
+                      <mat-expansion-panel-header class="mat-header-bg" *ngIf="!p.pages" [class.active-parent] = "example.expanded" [routerLink]="p.value.module_url">
+                        <mat-panel-title class = "font-size-11 line-height-16">
+                          <ion-icon class="margin-right-10 font-size-16" [name]="p.value.module_icon" slot="start"></ion-icon>
+                          {{ p.value.module_display_name }}  
+                        </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      
+                      <!-- work + - -->
+                      <mat-expansion-panel-header class="mat-header-bg" *ngIf="p.pages" [class.active-parent] = "example.expanded">
+                        <mat-panel-title class = "font-size-11 line-height-16">
+                          <ion-icon class="margin-right-10 font-size-16" [name]="p.value.module_icon" slot="start"></ion-icon>
+                          {{ p.value.module_display_name }}  
+                        </mat-panel-title>
+                        <mat-icon *ngIf="!example.expanded">add</mat-icon>
+                        <mat-icon *ngIf="example.expanded">remove</mat-icon>
+                      </mat-expansion-panel-header>
+                        
+                      <!-- super admin sub menu -->
+                      <ion-list class="list-items bg-none" *ngIf="p.pages">
+                        <ion-menu-toggle auto-hide="false">
+                          <ion-item *ngFor="let sub of p.pages" class="sub-item" [routerLink]="sub.value.page_url" routerLinkActive="router-link-active" routerDirection="root" [routerLinkActiveOptions]="{ exact: true }">
+                            <ion-icon class="font-size-20" [name]="sub.value.page_icon" slot="start"></ion-icon>
+                            <ion-label class="font-size-11">
+                              {{ sub.value.page_display_name }} 
+                            </ion-label>
+                          </ion-item>
+                        </ion-menu-toggle>
+                      </ion-list>
+
+                  </mat-expansion-panel>
+                </mat-accordion>
+              <!-------------------- super admin  Menu Content Ends -->
+
+              <!-- ==================== group login Menu Content Starts =============== -->
+              <mat-accordion color="primary" class="mat-menu display-inline-block margin-top-10" *ngIf="!userInfodDataLoading && get_user_type == 'group' ">
+
+                <mat-expansion-panel class="margin-bottom-5">
+                  <mat-expansion-panel-header class="mat-header-bg" >
+                      <mat-panel-title class = "font-size-11 line-height-16" [routerLink]="['/dashboard']" routerLinkActive="router-link-active" routerDirection="root" [routerLinkActiveOptions]="{ exact: true }" style="outline: none;">
+                        <ion-icon class="margin-right-10 font-size-16" name="analytics" slot="start"></ion-icon>
+                        Dashboard
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
+                </mat-expansion-panel>
+
+                <mat-expansion-panel class="margin-bottom-5" *ngFor="let p of menuPages; last as isLast; first as isFirst;  let ind = index" [expanded]="p.isOpen"  #example>
+
+                    <!-- hideToggle="true" #iconanchor -->
+                    <!-- no + - -->
+                    <mat-expansion-panel class="mat-header-bg" *ngIf="!p.pages">
+                      <mat-panel-title class = "font-size-11 line-height-16">
+                        <ion-icon class="margin-right-10 font-size-16" [name]="p.value.module_icon" slot="start"></ion-icon>
+                        {{ p.value.module_display_name }}  
+                      </mat-panel-title>
+                    </mat-expansion-panel>
+                    
+                    <!-- work + - -->
+                    <mat-expansion-panel-header class="mat-header-bg" *ngIf="p.pages.length > 0 " [ngClass] = "{'active':example.expanded, 'pactive':example.expanded}">
+                      <mat-panel-title class = "font-size-11 line-height-16" [ngClass] = "{'active':example.expanded, 'pactive':example.expanded}">
+                        <ion-icon class="margin-right-10 font-size-16" [name]="p.value.module_icon" slot="start"></ion-icon>
+                        {{ p.value.module_display_name }}  
+                      </mat-panel-title>
+                      <mat-icon *ngIf="!example.expanded">add</mat-icon>
+                      <mat-icon *ngIf="example.expanded">remove</mat-icon>
+                    </mat-expansion-panel-header>
+
+                    <!-- group sub menu  start-->
+                    <!-- routerLinkActive="router-link-active" routerDirection="root" [routerLinkActiveOptions]="{ exact: true }" -->
+                    <ion-list class="list-items bg-none" *ngIf="p.pages.length > 0">
+                      <ion-menu-toggle auto-hide="false">
+                        <ion-item *ngFor="let sub of p.pages; let i=index" [ngClass]="{'router-link-active': parentSelectedIndex == ind && childSelectedIndex == 'lender'}" class="sub-item" [routerLink]="sub.page_url" routerDirection="root" [hidden]="p.value?.lender.length == 0" (click)="onClickGroupItem(ind, i, 'lender', p.value, menuPages)">
+                            <ion-icon class="font-size-20" name="person" slot="start"></ion-icon>
+                            <ion-label class="font-size-11">
+                              Lending 
+                            </ion-label>
+                        </ion-item>
+                        <ion-item *ngFor="let sub of p.pages; let i=index" [ngClass]="{'router-link-active': parentSelectedIndex == ind && childSelectedIndex == 'borrower'}" class="sub-item" [routerLink]="sub.page_url" routerDirection="root" [hidden]="p.value?.borrower.length == 0" (click)="onClickGroupItem(ind, i, 'borrower', p.value, menuPages)">
+                            <ion-icon class="font-size-20" name="person" slot="start"></ion-icon>
+                            <ion-label class="font-size-11">
+                              Borrowing 
+                            </ion-label>
+                        </ion-item>
+                      </ion-menu-toggle>
+                    </ion-list>
+                    <!-- group sub menu  end-->
+
+                </mat-expansion-panel>
+              </mat-accordion>
+              <!-------------------- group login  Menu Content Ends -->
+
+            </div>
+          </ion-content>
+    
+        </ion-menu>
+      <!-- ---------- Side Menu Ends ---------------->
+
+        <ion-router-outlet id="menucontent" main></ion-router-outlet>
+    </ion-split-pane>
+    
+</ion-app>

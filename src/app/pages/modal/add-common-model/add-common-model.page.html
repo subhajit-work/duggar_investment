@@ -1,0 +1,624 @@
+<ion-content class="add-modal interest-add-modal">
+    <ion-item class="modal-header">
+        <ion-label>
+           {{heder_title}}
+        </ion-label>
+        <div class="modal-cancel-btn">
+            <a herf="#" (click)="closeModal()"><ion-icon color="dark" ios="ios-close" md="md-close"></ion-icon></a>
+        </div>
+    </ion-item>
+
+    <!-- ==== interest_deposit or brokerage_deposit ==== -->
+    <ion-grid [ngClass]="{'disabled': form_submit_text == 'Submitting'}" *ngIf="this.get_identifier == 'interest_deposit' || this.get_identifier == 'brokerage_deposit'">
+        <form class="modal"  #addInterestModalForm="ngForm" (ngSubmit)="onSubmit(addInterestModalForm)" >
+            <div class="modal-body">
+                <!-- for edit -->
+                <input type="hidden" name="_method" [(ngModel)]="onEditField">
+                <input *ngIf="get_item?.transaction?.id" type="hidden" name="deposit_tran_id" [(ngModel)]="get_item.transaction.id">
+                <!-- Deposit Date -->
+                <ion-row>
+                    <ion-col size="12">
+                        <div>
+                            <ion-label position="floating">Deposit Date<sup>*</sup></ion-label>
+                            <li-ionic4-datepicker 
+                                name="deposit_date" 
+                                [(ngModel)]="model.setStartdate"
+                                [inputDateConfig]="datePickerObj" 
+                                (ngModelChange)="myFunction()"
+                                required
+                            ></li-ionic4-datepicker>
+                        </div>
+                    </ion-col>
+                    <ion-col size="12">
+                        <div>
+                            <ion-label position="floating">Description</ion-label>
+                            <ion-textarea name="description" [(ngModel)]="model.description" clearInput></ion-textarea>
+                        </div>
+                    </ion-col>
+                </ion-row>
+
+            </div>
+            <!-- submit button -->
+            <ion-row>
+                <ion-col class="ion-text-center modal-submit modal-footer" size-xs="12" size-sm="12" size-md="12"  size-lg="12" >
+                    <ion-button color="secondary" size="default"
+                    type="submit" [disabled]="!addInterestModalForm.valid" 
+                    color="secondary" tooltip="Save" flow="up">
+                        <ion-spinner *ngIf="form_submit_text == 'Submitting'" name="crescent"></ion-spinner> 
+                        <span class="submitText">{{form_submit_text}}</span>
+                    </ion-button>
+                    <ion-button (click)="closeModal()" size="default" fill="clear" color="danger">
+                        <ion-icon name="close"></ion-icon>
+                        Cancel
+                    </ion-button>
+                </ion-col>
+            </ion-row>
+        </form>
+    </ion-grid>
+
+    <!-- =================== principle_recive_modal ===== -->
+    <ion-grid  *ngIf="this.get_identifier == 'principle_recive_modal'">
+        <ion-row>
+            <ion-col size="12">
+                <form class="modal"  #addPrincipleReciveModalForm="ngForm" (ngSubmit)="onSubmit(addPrincipleReciveModalForm)" >
+                    <div class="modal-body">
+                        <!-- for edit -->
+                        <input type="hidden" name="_method" [(ngModel)]="onEditField">
+                        <!-- Deposit Date -->
+                        <ion-row>
+                            <ion-col size="12">
+                                <div>
+                                    <ion-label position="floating">Date <sup>*</sup></ion-label>
+                                    <li-ionic4-datepicker 
+                                        name="principle_recived_date" 
+                                        [(ngModel)]="setStartdate"
+                                        [inputDateConfig]="principledatePickerObj" 
+                                        (ngModelChange)="myFunction()"
+                                        required
+                                    ></li-ionic4-datepicker>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col size="12">
+                                <div>
+                                    <ion-label position="floating">Description</ion-label>
+                                    <ion-textarea name="principle_comment" [(ngModel)]="model.description" clearInput></ion-textarea>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+
+                    </div>
+                    <!-- submit button -->
+                    <ion-row>
+                        <ion-col class="ion-text-center modal-submit modal-footer" size-xs="12" size-sm="12" size-md="12"  size-lg="12" >
+                            <ion-button color="secondary" size="default"
+                            type="submit" [disabled]="!addPrincipleReciveModalForm.valid" 
+                            color="secondary" tooltip="Save" flow="up">
+                                <ion-spinner *ngIf="form_submit_text == 'Submitting'" name="crescent"></ion-spinner> 
+                                <span class="submitText">{{form_submit_text}}</span>
+                            </ion-button>
+                            <ion-button (click)="closeModal()" size="default" fill="clear" color="danger">
+                                <ion-icon name="close"></ion-icon>
+                                Cancel
+                            </ion-button>
+                        </ion-col>
+                    </ion-row>
+                </form>
+                
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <!-- =================== tds_recive_modal ===== -->
+    <ion-grid  *ngIf="this.get_identifier == 'tds_recive_modal'">
+        <ion-row>
+            <ion-col size="12">
+                <form class="modal"  #addTdsReciveModalForm="ngForm" (ngSubmit)="onSubmit(addTdsReciveModalForm)" >
+                    <div class="modal-body">
+                        <!-- for edit -->
+                        <input type="hidden" name="_method" [(ngModel)]="onEditField">
+                        <!-- Deposit Date -->
+                        <ion-row>
+                            <ion-col size="12">
+                                <div>
+                                    <ion-label position="floating">Date <sup>*</sup></ion-label>
+                                    <li-ionic4-datepicker 
+                                        name="conflicted_recived_date" 
+                                        [(ngModel)]="setStartdate"
+                                        [inputDateConfig]="tdsdatePickerObj" 
+                                        (ngModelChange)="myFunction()"
+                                        required
+                                    ></li-ionic4-datepicker>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col size="12">
+                                <div>
+                                    <ion-label position="floating">Description</ion-label>
+                                    <ion-textarea name="conflicted_comment" [(ngModel)]="model.description" clearInput></ion-textarea>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+
+                    </div>
+                    <!-- submit button -->
+                    <ion-row>
+                        <ion-col class="ion-text-center modal-submit modal-footer" size-xs="12" size-sm="12" size-md="12"  size-lg="12" >
+                            <ion-button color="secondary" size="default"
+                            type="submit" [disabled]="!addTdsReciveModalForm.valid" 
+                            color="secondary" tooltip="Save" flow="up">
+                                <ion-spinner *ngIf="form_submit_text == 'Submitting'" name="crescent"></ion-spinner> 
+                                <span class="submitText">{{form_submit_text}}</span>
+                            </ion-button>
+                            <ion-button (click)="closeModal()" size="default" fill="clear" color="danger">
+                                <ion-icon name="close"></ion-icon>
+                                Cancel
+                            </ion-button>
+                        </ion-col>
+                    </ion-row>
+                </form>
+                
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <!-- ================== change password modal ======= -->
+    <ion-grid  *ngIf="this.get_identifier == 'change_password_modal'">
+        <ion-row>
+            <ion-col size="12">
+                <form class="modal"  #addPrincipleReciveModalForm="ngForm" (ngSubmit)="onSubmit(addPrincipleReciveModalForm)" [mustMatch]="['new_password', 'confirm_password']" novalidate>
+                    <div class="modal-body">
+                        <!-- for edit -->
+                        <input type="hidden" name="_method" [(ngModel)]="onEditField">
+                        <!-- Deposit Date -->
+                        <div class="change-password-wrapper">
+                            <div class="change-password-inner">
+                                <ion-row>
+                                    <ion-col size="12">
+                                        <div>
+                                            <ion-label position="floating">Old Password <sup>*</sup> </ion-label>
+                                            <div>
+                                                <ion-input type="password" name="old_password" [(ngModel)]="model.old_password" clearInput required>
+                                                </ion-input>
+                                            </div>
+                                        </div>
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col size="12">
+                                        <div>
+                                            <ion-label position="floating">New Password <sup>*</sup> </ion-label>
+                                            <div>
+                                                <ion-input placeholder="Ex: @abcdef7" pattern="(?=[^\s]*[^\sa-zA-Z0-9][^\s]*)(?=[^\s]*[a-zA-Z][^\s]*[A-Za-z][^\s]*)(?=.*[0-9])[^\s]{8,}" type="password" name="new_password" [(ngModel)]="model.new_password" clearInput required>
+                                                </ion-input>
+                                            </div>
+                                        </div>
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col size="12">
+                                        <div>
+                                            <ion-label placeholder="Ex: @abcdef7" pattern="(?=[^\s]*[^\sa-zA-Z0-9][^\s]*)(?=[^\s]*[a-zA-Z][^\s]*[A-Za-z][^\s]*)(?=.*[0-9])[^\s]{8,}" position="floating">Confirm Password <sup>*</sup> </ion-label>
+                                            <div>
+                                                <ion-input type="password" name="confirm_password" [(ngModel)]="model.confirm_password" clearInput required>
+                                                </ion-input>
+                                            </div>
+                                        </div>
+                                    </ion-col>
+                                </ion-row>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- submit button -->
+                    <ion-row>
+                        <ion-col class="ion-text-center modal-submit modal-footer" size-xs="12" size-sm="12" size-md="12"  size-lg="12" >
+                            <ion-button color="secondary" size="default"
+                            type="submit" [disabled]="!addPrincipleReciveModalForm.valid" 
+                            color="secondary" tooltip="Save" flow="up">
+                                <ion-spinner *ngIf="form_submit_text == 'Submitting'" name="crescent"></ion-spinner> 
+                                <span class="submitText">{{form_submit_text}}</span>
+                            </ion-button>
+                            <ion-button (click)="closeModal()" size="default" fill="clear" color="danger">
+                                <ion-icon name="close"></ion-icon>
+                                Cancel
+                            </ion-button>
+                        </ion-col>
+                    </ion-row>
+                </form>
+                
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <!-- ==================== profile update modal ======= -->
+    <ion-grid  *ngIf="this.get_identifier == 'profile_update_modal'">
+        <ion-row>
+            <ion-col size="12">
+                <form class="modal"  #addPrincipleReciveModalForm="ngForm" (ngSubmit)="onSubmit(addPrincipleReciveModalForm)" >
+                    <div class="modal-body">
+
+                        <!-- ----------  hidden field start ---------->
+                        <div style="display: none;">
+                            <!-- for edit -->
+                            <input type="hidden" name="_method" [(ngModel)]="onEditField">
+
+                            <!-- hidden -->
+                            <input type="hidden" name="role" [(ngModel)]="onHiddenRole">
+
+                            <!-- Name -->
+                             <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <div>
+                                    <ion-label position="floating">Name<sup>*</sup></ion-label>
+                                    <ion-input name="name" [(ngModel)]="model.name" clearInput required></ion-input>
+                                </div>
+                            </ion-col>
+
+                            <!--  Client -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <ion-label position="floating">  Client<sup>*</sup> </ion-label>
+                                <ng-select  #companyNameSerch
+                                [loading]="selectLoading"
+                                [dropdownPosition]="'bottom'"
+                                placeholder="Please Select Client"
+                                [items]="companyList"
+                                bindLabel="name"
+                                name="client_id"
+                                bindValue="id"
+                                [searchable]="false"
+                                [(ngModel)]="model.borrower"
+                                [multiple]="true"
+                                required
+                                >
+                                <ng-template ng-header-tmp>
+                                    <input placeholder="Search" class="dropdown-custom-search" type="text" (input)="companyNameSerch.filter($event.target.value)" [autofocus]="true" />
+                                </ng-template>
+                                </ng-select>
+                            </ion-col>
+
+                            <!-- Email / User Name  -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <div>
+                                    <ion-label position="floating">Email / User Name <sup>*</sup> </ion-label>
+                                    <ion-input name="username" [(ngModel)]="model.username" clearInput required></ion-input>
+                                </div>
+                            </ion-col>
+
+                            <!-- Country -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <div>
+                                    <ion-label position="floating">Country <sup>*</sup> </ion-label>
+                                    <ion-input name="country" [(ngModel)]="model.countrys" clearInput required></ion-input>
+                                </div>
+                            </ion-col>
+
+                            <!-- State -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <div>
+                                    <ion-label position="floating">State <sup>*</sup></ion-label>
+                                    <ion-input name="state" [(ngModel)]="model.state" placeholder="Search State" clearInput required></ion-input>
+                                </div>
+                            </ion-col>
+
+                            <!-- City -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <div>
+                                    <ion-label position="floating">City <sup>*</sup> </ion-label>
+                                    <ion-input name="city" [(ngModel)]="model.city" placeholder="Search City" clearInput required></ion-input>
+                                </div>
+                            </ion-col>
+
+                            <!-- Pin -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <div>
+                                    <ion-label position="floating">Pin <sup>*</sup> </ion-label>
+                                    <ion-input OnlyNumber="true" name="pin" [(ngModel)]="model.pin" clearInput required></ion-input>
+                                </div>
+                            </ion-col>
+                            
+                            <!-- Group Description -->
+                            <ion-col size="12">
+                                <div>
+                                    <ion-label position="floating">Group Description</ion-label>
+                                    <ion-textarea auto-grow="true" name="description" [(ngModel)]="model.description" clearInput></ion-textarea>
+                                </div>
+                            </ion-col>
+
+                            <!-- Enable -->
+                            <ion-col size-xs="4" size-sm="4" size-md="3"  size-lg="2">
+                                <div class="toggle-button">
+                                    <ion-label>Enable</ion-label>
+                                    <ion-label>
+                                        <p class="onoff">
+                                            <input type="checkbox" value="1" id="checkboxID" name="status" [(ngModel)]="model.enable">
+                                            <label for="checkboxID"></label></p>
+                                    </ion-label>
+                                </div>
+                            </ion-col>
+
+                            <!-- is_login -->
+                            <ion-col size-xs="4" size-sm="4" size-md="3"  size-lg="2">
+                                <div class="toggle-button">
+                                    <ion-label>Login</ion-label>
+                                    <ion-label>
+                                        <p class="onoff">
+                                            <input type="checkbox" value="1" id="checkboxID3" name="is_login" [(ngModel)]="model.is_login">
+                                            <label for="checkboxID3"></label></p>
+                                    </ion-label>
+                                </div>
+                            </ion-col>
+
+                            <!-- send_sms -->
+                            <ion-col size-xs="4" size-sm="4" size-md="3"  size-lg="2">
+                                <div class="toggle-button">
+                                    <ion-label>SMS</ion-label>
+                                    <ion-label>
+                                        <p class="onoff"><input type="checkbox" value="1" id="checkboxID2" name="send_sms" [(ngModel)]="model.sms"><label for="checkboxID2"></label></p>
+                                    </ion-label>
+                                </div>
+                            </ion-col>
+
+                            <!-- send_email -->
+                            <ion-col size-xs="4" size-sm="4" size-md="3"  size-lg="2">
+                                <div class="toggle-button">
+                                    <ion-label>Email</ion-label>
+                                    <ion-label>
+                                        <p class="onoff"><input type="checkbox" value="1" id="checkboxID5" name="send_email" [(ngModel)]="model.emailcheck"><label for="checkboxID5"></label></p>
+                                    </ion-label>
+                                </div>
+                            </ion-col>
+                        </div>
+                        <!-- ------------- hidden field end --------------------->
+                        
+                        <ion-row *ngIf="profileLoading">
+                            <!-- loading -->
+                            <ion-col size-xs="12" >
+                                <div class="profile-loading"> 
+                                    <ion-spinner name="crescent"></ion-spinner>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+
+                        <ion-row *ngIf="!profileLoading">
+                            <!-- Name -->
+                            <ion-col size-xs="12" size-sm="6" >
+                                <div class="update-profile">
+                                    <div class="update-profile-image">
+                                        <img *ngIf="!get_item?.profile" class="img-scale" src="assets/images/noimage.jpg" />
+
+                                        <img *ngIf="get_item?.profile" class="img-scale" src="{{main_url}}/{{get_item.profile}}" />                 <span class="username">
+                                            {{get_item?.full_name}} {{get_item?.name}} 
+                                        </span>
+                                    </div>
+                                </div>
+                            </ion-col>
+                            <ion-col size-xs="12" size-sm="6" >
+                                <div class="update-profile client">
+                                    <div class="update-profile-client" *ngIf="allClient?.length > 0">
+                                        <b>Client : </b>
+                                        <span *ngFor="let item of allClient; let islast = last;">{{item.name}} <i *ngIf="!islast">,</i></span>
+                                    </div>
+                                    <div class="user_id">
+                                        <b>Email / User Name : </b> {{ model.username }}
+                                    </div>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+
+                        <ion-row>
+                            <!-- Address -->
+                            <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="4">
+                                <div>
+                                    <ion-label position="floating">Address <sup>*</sup> </ion-label>
+                                    <ion-input name="address" [(ngModel)]="model.address_1" clearInput required></ion-input>
+                                </div>
+                            </ion-col>
+
+                            <!-- Phone -->
+                            <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="4">
+                                <div>
+                                    <ion-label position="floating">Phone <sup>*</sup> </ion-label>
+                                    <ion-input OnlyNumber="true" type="tel" minlength="10"maxlength="10" name="phone" [(ngModel)]="model.phone" clearInput required></ion-input>
+                                </div>
+                            </ion-col>
+
+                            <!-- Communication Email -->
+                            <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="4">
+                                <div>
+                                    <ion-label position="floating">Communication Email <sup>*</sup> </ion-label>
+                                    <ion-input pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" type="email" name="communication_email" [(ngModel)]="model.communication_email" clearInput email required></ion-input>
+                                </div>
+                            </ion-col>
+
+                            <!-- Password -->
+                            <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="4">
+                                <div>
+                                    <ion-label position="floating">Password <sup>*</sup> </ion-label>
+                                    <div>
+                                        <ion-input placeholder="Ex: @abcdef7" pattern="(?=[^\s]*[^\sa-zA-Z0-9][^\s]*)(?=[^\s]*[a-zA-Z][^\s]*[A-Za-z][^\s]*)(?=.*[0-9])[^\s]{8,}"  type="password" name="password" [(ngModel)]="model.password" clearInput required>
+                                        </ion-input>
+                                    </div>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                    <!-- submit button -->
+                    <ion-row>
+                        <ion-col class="ion-text-center modal-submit modal-footer" size-xs="12" size-sm="12" size-md="12"  size-lg="12" >
+                            <ion-button [disabled]="!addPrincipleReciveModalForm.valid" color="secondary" size="default"
+                            type="submit" 
+                            color="secondary" tooltip="Save" flow="up">
+                                <ion-spinner *ngIf="form_submit_text == 'Submitting'" name="crescent"></ion-spinner> 
+                                <span class="submitText">{{form_submit_text}}</span>
+                            </ion-button>
+                            <ion-button (click)="closeModal()" size="default" fill="clear" color="danger">
+                                <ion-icon name="close"></ion-icon>
+                                Cancel
+                            </ion-button>
+                        </ion-col>
+                    </ion-row>
+                </form>
+                
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <!-- ================== file_preview ================== -->
+    <ion-grid  *ngIf="this.get_identifier == 'file_preview'">
+        <ion-row>
+            <ion-col size="12" style="margin-top: 55px;">
+                <!-- {{get_item.file_path}} -->
+                <!-- <img *ngIf="get_item.file_extension == 'png' || get_item.file_extension == 'jpeg' || get_item.file_extension == 'jpg' || get_item.file_extension == 'gif'" src="{{main_url}}/{{get_item.file_path}}" /> -->
+                <div class="preview-wrapper">
+                    <div class="preview-inner">
+                        <embed [src]="previewOtherUrl | mySafe " />
+                    </div>
+                </div>
+                
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <!-- ================== payment_details ================== -->
+    <ion-grid  *ngIf="this.get_identifier == 'payment_details'" class="transaction-view">
+        <ion-row class="first-table">
+            <ion-col size="6" class="left-box" style="margin-top: 55px;">
+                <div class="view-element">
+                  <i class="principle material-icons">payment</i> 
+                  <span class="text-name-bold">Payment Mode:</span>
+                  <!-- <span>{{get_array?.payment_mode}}</span> -->
+                </div>
+            </ion-col>
+            <ion-col size="6" class="left-box" style="margin-top: 55px;">
+                <div class="view-element">
+                  <!-- <i class="principle material-icons">keyboard_arrow_right</i> -->
+                  <!-- <span class="text-name-bold">Payment Mode:</span> -->
+                  <span class="result">{{get_array?.payment_mode}}</span>
+                </div>
+            </ion-col>
+
+            <ion-col *ngIf="get_array?.intrest_cheque_no !== '' " size="6" class="left-box">
+                <div class="view-element">
+                  <i class="principle material-icons">account_balance</i> 
+                  <span class="text-name-bold">Cheque Number:</span>
+                  <!-- <span>{{get_array?.intrest_cheque_no}}</span> -->
+                </div>
+            </ion-col>
+            <ion-col *ngIf="get_array?.intrest_cheque_no !== '' " size="6" class="left-box">
+                <div class="view-element">
+                  <!-- <i class="principle material-icons">account_balance</i> 
+                  <span class="text-name-bold">Cheque Number:</span> -->
+                  <span class="result">{{get_array?.intrest_cheque_no}}</span>
+                </div>
+            </ion-col>
+
+            <ion-col size="6" class="left-box">
+                <div class="view-element">
+                  <i class="lender material-icons">date_range</i> 
+                  <span class="text-name-bold">Payment Date:</span>
+                  <!-- <span>{{get_array?.pay_date}}</span> -->
+                </div>
+            </ion-col>
+            <ion-col size="6" class="left-box">
+                <div class="view-element">
+                  <!-- <i class="lender material-icons">date_range</i> 
+                  <span class="text-name-bold">Payment Date:</span> -->
+                  <span class="result">{{get_array?.pay_date}}</span>
+                </div>
+            </ion-col>
+
+            <ion-col size="6" class="left-box">
+                <div class="view-element">
+                  <i class="borrower material-icons">calendar_today</i> 
+                  <span class="text-name-bold">Deposite Date:</span>
+                  <!-- <span>{{get_array?.deposit_date}}</span> -->
+                </div>
+            </ion-col>
+            <ion-col size="6" class="left-box">
+                <div class="view-element">
+                  <!-- <i class="borrower material-icons">calendar_today</i> 
+                  <span class="text-name-bold">Deposite Date:</span> -->
+                  <span class="result">{{get_array?.deposit_date}}</span>
+                </div>
+            </ion-col>
+
+            <ion-col size="6" class="left-box">
+                <div class="view-element">
+                  <i class="account material-icons">account_box</i> 
+                  <span class="text-name-bold">Account Name:</span>
+                  <!-- <span>{{get_array?.account_name}}</span> -->
+                </div>
+            </ion-col>
+            <ion-col size="6" class="left-box">
+                <div class="view-element">
+                  <!-- <i class="account material-icons">account_box</i> 
+                  <span class="text-name-bold">Account Name:</span> -->
+                  <span class="result">{{get_array?.account_name}}</span>
+                </div>
+            </ion-col>
+
+            <ion-col size="6" class="left-box">
+                <div class="view-element">
+                  <i class="chart material-icons">looks_one</i> 
+                  <span class="text-name-bold">Account Number:</span>
+                  <!-- <span>{{get_array?.account_no}}</span> -->
+                </div>
+            </ion-col>
+            <ion-col size="6" class="left-box">
+                <div class="view-element">
+                  <!-- <i class="chart material-icons">looks_one</i> 
+                  <span class="text-name-bold">Account Number:</span> -->
+                  <span class="result">{{get_array?.account_no}}</span>
+                </div>
+            </ion-col>
+
+            <ion-col size="6" class="left-box">
+                <div class="view-element">
+                  <i class=" material-icons">account_balance</i> 
+                  <span class="text-name-bold">Bank:</span>
+                  <!-- <span>{{get_array?.bank}}</span> -->
+                </div>
+            </ion-col>
+            <ion-col size="6" class="left-box">
+                <div class="view-element">
+                  <!-- <i class=" material-icons">account_balance</i> 
+                  <span class="text-name-bold">Bank:</span> -->
+                  <span class="result">{{get_array?.bank}}</span>
+                </div>
+            </ion-col>
+
+            <ion-col *ngIf="get_array?.branch !== '' " size="6" class="left-box">
+                <div class="view-element">
+                  <i class="principle material-icons">account_balance</i> 
+                  <span class="text-name-bold">Branch:</span>
+                  <!-- <span>{{get_array?.branch}}</span> -->
+                </div>
+            </ion-col>
+            <ion-col *ngIf="get_array?.branch !== '' " size="6" class="left-box">
+                <div class="view-element">
+                  <!-- <i class="principle material-icons">account_balance</i> 
+                  <span class="text-name-bold">Branch:</span> -->
+                  <span class="result">{{get_array?.branch}}</span>
+                </div>
+            </ion-col>
+
+            <ion-col *ngIf="get_array?.bank_transaction_id !== null " size="6" class="left-box">
+                <div class="view-element">
+                  <i class="principle material-icons">account_balance</i> 
+                  <span class="text-name-bold">Transaction Id:</span>
+                  <!-- <span>{{get_array?.bank_transaction_id}}</span> -->
+                </div>
+            </ion-col>
+            <ion-col *ngIf="get_array?.bank_transaction_id !== null " size="6" class="left-box">
+                <div class="view-element">
+                  <!-- <i class="principle material-icons">account_balance</i> 
+                  <span class="text-name-bold">Transaction Id:</span> -->
+                  <span class="result">{{get_array?.bank_transaction_id}}</span>
+                </div>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+</ion-content>

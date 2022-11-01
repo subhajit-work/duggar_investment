@@ -1,0 +1,196 @@
+<!-- common header show -->
+<common-header></common-header>
+ 
+<ion-content class="page-wrapper">
+    <div class="page-inner">
+        <ion-row class="width-100 sub-header nomargin nopadding">
+            <ion-col size-xs="7" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+                <div class = "sub-header-color pull-left width-100 font-size-18 vertical-middle">
+                    <span>{{actionHeaderText}} Account Type</span>
+                </div>
+            </ion-col>
+            <ion-col size-xs="5" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+                <div class = "sub-header-color width-100 text-right">
+                <span class="font-size-13"> {{curentDate | date:'dd MMM yyy'}} <i>|</i> {{curentDate | date:'h:mm a '}}</span>
+                </div>
+            </ion-col>
+        </ion-row>
+        <div class="add-new-page-body" [ngClass]="{'disabled': form_submit_text == 'Submitting'}">
+
+            <!-- loading -->
+            <div class="edit-loading-page" *ngIf="editLoading">
+                <span>
+                    <ion-spinner name="lines"></ion-spinner>
+                </span>
+            </div>
+
+            <form  #addForm="ngForm" (ngSubmit)="onSubmit(addForm)" >
+                <div class="add-new-page-underpart2">
+                  <ion-grid>
+                    <ion-row>
+                      <!-- for edit -->
+                      <input *ngIf="actionHeaderText == 'Edit'" type="hidden" name="_method" [(ngModel)]="onEditField">
+
+                        <!-- Name -->
+                        <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                            <div>
+                                <ion-label position="floating">Name<sup>*</sup></ion-label>
+                                <ion-input name="name" [(ngModel)]="model.name" clearInput required></ion-input>
+                            </div>
+                        </ion-col>
+                        
+                        <!-- gstin_no -->
+                        <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                            <div>
+                                <ion-label position="floating">GSTIN No<sup>*</sup></ion-label>
+                                <ion-input minlength="15" maxlength="15" name="gstin_no" [(ngModel)]="model.gstin_no" clearInput required></ion-input>
+                            </div>
+                        </ion-col>
+
+                        <!-- short_code -->
+                        <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                            <div>
+                                <ion-label position="floating">Short Code<sup>*</sup></ion-label>
+                                <ion-input name="short_code" [(ngModel)]="model.short_code" clearInput required></ion-input>
+                            </div>
+                        </ion-col>
+
+                        <!-- city -->
+                        <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                            <div>
+                                <ion-label position="floating">City<sup>*</sup></ion-label>
+                                <ion-input name="city" [(ngModel)]="model.city" clearInput required></ion-input>
+                            </div>
+                        </ion-col>
+
+                        <!-- state -->
+                        <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                            <div>
+                                <ion-label position="floating">State<sup>*</sup></ion-label>
+                                <ion-input name="state" [(ngModel)]="model.state" clearInput required></ion-input>
+                            </div>
+                        </ion-col>
+
+                        <!-- email -->
+                        <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                            <div>
+                                <ion-label position="floating">Email<sup>*</sup></ion-label>
+                                <ion-input pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" type="email" name="email" [(ngModel)]="model.email" clearInput email required></ion-input>
+                            </div>
+                        </ion-col>
+
+                        <!-- phone -->
+                        <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                            <div>
+                                <ion-label position="floating">Phone<sup>*</sup></ion-label>
+                                <ion-input OnlyNumber="true" type="tel" minlength="10"maxlength="10" name="phone" [(ngModel)]="model.phone" clearInput required></ion-input>
+                            </div>
+                        </ion-col>
+
+                        <!-- bank -->
+                        <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                            <div>
+                                <ion-label position="floating">Bank</ion-label>
+                                <ion-input name="bank" [(ngModel)]="model.bank" clearInput ></ion-input>
+                            </div>
+                        </ion-col>
+
+                        <!-- branch -->
+                        <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                            <div>
+                                <ion-label position="floating">Branch</ion-label>
+                                <ion-input name="branch" [(ngModel)]="model.branch" clearInput ></ion-input>
+                            </div>
+                        </ion-col>
+
+                        <!-- Bank Account -->
+                        <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                            <div>
+                                <ion-label position="floating">Bank Account</ion-label>
+                                <ion-input name="banck_acc" [(ngModel)]="model.banck_acc" clearInput ></ion-input>
+                            </div>
+                        </ion-col>
+
+                        <!-- ifsc -->
+                        <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                            <div>
+                                <ion-label position="floating">IFSC</ion-label>
+                                <ion-input name="ifsc" [(ngModel)]="model.ifsc" clearInput ></ion-input>
+                            </div>
+                        </ion-col>
+
+                        <!-- Enable -->
+                        <ion-col size-xs="12" size-sm="6" size-md="2"  size-lg="2">
+                          <div class="toggle-button">
+                              <ion-label>Enable</ion-label>
+                              <ion-label>
+                                  <p class="onoff"><input type="checkbox" value="1" id="checkboxID" name="status" [(ngModel)]="model.enable" ><label for="checkboxID"></label></p>
+                              </ion-label>
+                          </div>
+                        </ion-col>
+
+                        <!-- address -->
+                        <ion-col size-xs="12" size-sm="8">
+                            <div>
+                                <ion-label position="floating">Address</ion-label>
+                                <ion-textarea auto-grow="true" name="address" [(ngModel)]="model.address" clearInput></ion-textarea>
+                            </div>
+                        </ion-col>
+
+                        <!-- Profile Image -->
+                        <ion-col size-xs="12" size-sm="4">
+                            <div class="file_upload">
+                                <ion-label position="floating">Logo Image</ion-label>
+                                <div class="normal-file-uploading">
+                                    <span class="upload-file">
+                                        Select Logo
+                                        <input [(ngModel)]="model.profile2" type="file" (change)="normalFileUpload($event)" placeholder="Upload logo" [ngModelOptions]="{standalone: true}" accept="image/*">
+                                    </span>
+                                    <!-- accept=".pdf,.jpg,.doc,.docx" -->
+                                    <span [hidden]="!model.logo" class="file-name">{{model.logo}}</span>
+                                    <span class="image-clear" (click)="fileCross(model.logo)" [hidden]="!model.logo">
+                                    <ion-icon name="close"></ion-icon>
+                                    </span>
+                                </div>
+                            </div>
+                        </ion-col>
+
+                    </ion-row>
+                  </ion-grid>
+                </div>
+                <div class="form-button-section">
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col class="ion-text-center" size-xs="12" size-sm="12" size-md="12"  size-lg="12">
+                                <ion-button color="danger" size="default" tooltip="Reload" (click)="reloadPageAlert()">
+                                    Reload
+                                </ion-button>
+                                <ion-button (click)="clickButtonType('Save')" color="secondary" size="default"
+                                type="submit" [disabled]="!addForm.valid" 
+                                color="secondary" tooltip="Save" flow="up">
+                                    <ion-spinner *ngIf="form_submit_text_save == 'Submitting'" name="crescent"></ion-spinner> 
+                                    <span class="submitText">{{form_submit_text_save}}</span>
+                                </ion-button>
+                                <ion-button (click)="clickButtonType('Save-add-another')" color="secondary" size="default"
+                                    type="submit" [disabled]="!addForm.valid" 
+                                    color="secondary" tooltip="Save & Add Another" flow="up">
+                                    <ion-spinner *ngIf="form_submit_text_save_another == 'Submitting'" name="crescent"></ion-spinner> 
+                                    <span class="submitText">
+                                        <span class="submitText">{{form_submit_text_save_another}}</span>
+                                    </span>
+                                </ion-button>
+                                <ion-button size="default" fill="clear" color="danger" tooltip="Cancel" flow="up" [routerLink]="['/', 'accountbranch-list']">
+                                    <ion-icon name="close"></ion-icon>
+                                    Cancel
+                                </ion-button>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </div>
+            </form>
+        </div>
+    </div>
+</ion-content>
+
+<!-- common footer show -->
+<common-footer></common-footer>

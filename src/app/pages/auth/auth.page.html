@@ -1,0 +1,97 @@
+<!-- <ion-header>
+    <ion-toolbar>
+      <ion-title>{{ isLogin? 'Sign In': 'SignUp'}}</ion-title>
+    </ion-toolbar>
+</ion-header> -->
+  
+<ion-content> 
+    <div class="login-form">
+        <div class="login-form-underpart">
+            <div class="text-center">
+                <div class="login-form-box">
+                    <form #loginForm="ngForm" (ngSubmit)="onSubmitForm(loginForm)" (keyup.enter)="onSubmitForm(loginForm)">
+                        <div class="top-section">
+                            <div class="logo">
+                                <img alt="logo" src="assets/images/transaction_logo.png">
+                            </div>
+                            <!-- <h2 class="form-signin-heading">sign in with Brokerage Management System</h2> -->
+                        </div>
+                        <div class="middle-section">
+                            <ion-grid>
+                                <ion-row>
+                                    <ion-col size-sm="12">
+                                        <ion-list>
+                                            <ion-item>
+                                                <ion-label position="floating">Email</ion-label>
+                                                <ion-input 
+                                                    type="email"
+                                                    ngModel
+                                                    name="email"
+                                                    required
+                                                    email
+                                                    #emailCtrl="ngModel"
+                                                    clearInput>
+                                                    <span class="login-icon"><ion-icon color="secondary" name="person"></ion-icon></span>
+                                                </ion-input>
+                                                </ion-item>
+                                            <ion-item>
+                                                <ion-label position="floating">Password</ion-label>
+                                                <ion-input
+                                                    type="password"
+                                                    ngModel
+                                                    name="password"
+                                                    required
+                                                    minlenth="2"
+                                                    #passwordCtrl="ngModel"
+                                                    clearInput>
+                                                    <span class="login-icon"><ion-icon color="secondary" name="lock"></ion-icon></span>
+                                                </ion-input>
+                                            </ion-item>
+                                        </ion-list>
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col size-sm="12">
+                                        <ion-button 
+                                        type="submit" 
+                                        color="secondary" 
+                                        expand="block"
+                                        [disabled]="!loginForm.valid">
+                                        Login
+                                        </ion-button>
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                <ion-col class="remember-me" size-xs="6" size-sm="6" size-md="6"  size-lg="6">
+                                    <!-- <ion-label>
+                                        <ion-checkbox color="dark"></ion-checkbox>
+                                        Remember me
+                                    </ion-label> -->
+                                </ion-col>
+                                <ion-col class="forget-password" size-xs="6" size-sm="6" size-md="6"  size-lg="6" [routerLink]="['/forgot-password']">
+                                    <ion-label class="forgot-text">Forgot password?</ion-label>
+                                </ion-col>
+                            </ion-row>
+                            </ion-grid>
+                        </div>
+                        <!-- <div class="bottom-section">
+                            <span tooltip="Facebook" flow="up" delay="500"><ion-icon name="logo-facebook" ></ion-icon></span>
+                            <span tooltip="Twitter" flow="up" delay="500"><ion-icon name="logo-twitter"></ion-icon></span>
+                            <span tooltip="Youtube" flow="up" delay="500"><ion-icon name="logo-youtube"></ion-icon></span>
+                            <span tooltip="Instagram" flow="up" delay="500"><ion-icon name="logo-instagram"></ion-icon></span>
+                            <span tooltip="RSS" flow="up" delay="500"><ion-icon name="logo-rss"></ion-icon></span>
+                            <span tooltip="Google Plus" flow="up" delay="500"><ion-icon name="logo-googleplus"></ion-icon></span>
+                        </div> -->
+                        <!-- <div class="login-footer " style="margin-top: 25px;" >
+                            <ion-label>
+                                Powered By: <a class="padding-left-5 forgot-text font-weight-500" href="https://rnjcs.in/?utm_source=bms&utm_medium=dugarinvestment" target="_blank">RNJ Consultancy Services</a>
+                            </ion-label>
+                        </div> -->
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</ion-content>
+  

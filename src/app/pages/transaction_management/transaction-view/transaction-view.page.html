@@ -1,0 +1,773 @@
+<!-- common header show -->
+<common-header></common-header>
+ 
+<ion-content class="page-wrapper transaction-view">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <div class="page-inner" style="min-height: 50px;">
+          <!-- <ion-row class="sub-header width-100 pull-left nomargin nopadding">
+            <ion-col size-xs="7" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+              <div class = "sub-header-color pull-left width-100 font-size-18 vertical-middle">
+                <span>Transactions View </span>
+              </div>
+            </ion-col>
+            <ion-col size-xs="5" size-sm="6" class = "transaction-inner pull-left width-100 padding-10">
+              <div class = "sub-header-color width-100 text-right">
+                <span class="font-size-13"> {{curentDate | date:'dd MMM yyy'}} <i>|</i> {{curentDate | date:'h:mm a '}}</span>
+              </div>
+            </ion-col>
+          </ion-row> -->
+
+          <!-- loading -->
+          <div class="edit-loading-page" *ngIf="viewLoadData">
+              <span>
+                  <ion-spinner name="lines"></ion-spinner>
+              </span>
+          </div>
+
+          <div >
+            <ion-grid class="first-table">
+              <ion-row>
+                <!-- <ion-col size-xs="12" *ngIf="viewData?.history_transaction_id">
+                  <div class="view-element" style="text-align: center;">
+                    <i class="account material-icons">account_box</i> 
+                    <span class="text-name-bold">History Transaction ID :</span>
+                    <span><b style="cursor: pointer" (click)="goToHistoryDetailsPage(viewData.main_id)">{{viewData?.history_transaction_id}}</b></span>
+                  </div>
+                </ion-col> -->
+                <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="6" class="left-box">
+                    <div class="view-element">
+                      <i class="principle material-icons">account_box</i> 
+                      <span class="text-name-bold">Transaction ID :</span>
+                      <span><b>{{viewData?.dgr_transaction_id}}</b></span>
+                    </div>
+                </ion-col>
+                <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="6" class="middle-box">
+                    <div class="view-element">
+                      <i class="account material-icons">account_circle</i> 
+                      <span class="text-name-bold">Account Holder Name :</span>
+                      <span>{{viewData?.account_branch?.name}}</span>
+                    </div>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="6" class="left-box" *ngIf="!isGroupLogin">
+                  <div class="view-element">
+                    <i class="lender material-icons"> group </i>
+                    <span class="text-name-bold">Lender Group :</span>
+                    <span>{{viewData?.lgroup?.name}}</span>
+                  </div>
+                </ion-col>
+                <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="6" class="middle-box" *ngIf="!isGroupLogin">
+                  <div class=" view-element">
+                    <i class="borrower material-icons"> group </i>
+                    <span class="text-name-bold">Borrower Group :</span>
+                    <span>{{viewData?.bgroup?.name}}</span>
+                  </div>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="6" class="left-box">
+                  <div class=" view-element">
+                    <i class="lender material-icons">person</i>
+                    <span class="text-name-bold">Lender : </span>
+                    <span>{{viewData?.lender?.name}}</span>
+                  </div>
+                </ion-col>
+                <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="6" class="middle-box">
+                  <div class=" view-element">
+                    <i class="borrower material-icons">person</i>
+                    <span class="text-name-bold">Borrower : </span>
+                    <span>{{viewData?.brrower?.name}}</span>
+                  </div>
+                </ion-col>
+                
+                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="6" class="left-box">
+                  <div class=" view-element">
+                    <i class="account material-icons">attach_money</i>
+                    <span class="text-name-bold">Total Interest Amount : </span>
+                    <!-- <span *ngIf="viewData?.is_renew == '1' && viewData?.transaction_status == '3';else other_content1">
+                      {{viewData?.due_interest}}
+                    </span> -->
+                    <!-- <ng-template #other_content1> -->
+                      <span>{{viewData?.total_intrst_amt}}</span>
+                    <!-- </ng-template> -->
+                  </div>
+                </ion-col>
+                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="6" class="middle-box">
+                  <div class=" view-element" [hidden]="isGroupLenderClick">
+                    <i class="account material-icons">attach_money</i>
+                    <span class="text-name-bold">Total Brokerage Amount : </span>
+                    <span *ngIf="viewData?.is_renew == '1' && viewData?.transaction_status == '3';else other_content2">
+                      {{viewData?.due_brokerage}}
+                    </span>
+                    <ng-template #other_content2>
+                      <span>{{viewData?.total_bro_interest_amt}}</span>
+                    </ng-template>
+                  </div>
+                </ion-col>
+
+                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="6" class="left-box">
+                  <div class=" view-element">
+                    <i class="principle material-icons">attach_money</i>
+                    <span class="text-name-bold">Remaining Interest Amount : </span>
+                    <span *ngIf="viewData?.is_renew == '1' && viewData?.transaction_status == '3';else other_content1">
+                      {{viewData?.due_interest}}
+                    </span>
+                    <ng-template #other_content1>
+                      <span>{{viewData?.interest_amt}}</span>
+                    </ng-template>
+                  </div>
+                </ion-col>
+                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="6" class="middle-box">
+                  <div class=" view-element" [hidden]="isGroupLenderClick">
+                    <i class="principle material-icons">attach_money</i>
+                    <span class="text-name-bold">Remaining Brokerage Amount : </span>
+                    <!-- <span *ngIf="viewData?.is_renew == '1' && viewData?.transaction_status == '3';else other_content2">
+                      {{viewData?.due_brokerage}}
+                    </span>
+                    <ng-template #other_content2>
+                      <span>{{viewData?.bro_interest_amt}}</span>
+                    </ng-template> -->
+                    <span>{{viewData?.bro_interest_amt}}</span>
+                  </div>
+                </ion-col>
+                
+                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="6" class="left-box">
+                  <div class=" view-element">
+                    <i class="chart material-icons">bar_chart</i>
+                    <span class="text-name-bold">Interest Status : </span>
+                    <span [ngClass]="{'success':viewData?.transaction_status == '1', 'danger':viewData?.transaction_status == '3', 'warning':viewData?.payment_mode == 'cheque' && viewData?.transaction_status == '0'}">{{viewData?.transaction_status_name}}</span>
+                  </div>
+                </ion-col>
+                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="6" class="middle-box">
+                  <div class="view-element">
+                    <i class="material-icons date">date_range</i>
+                    <span class="text-name-bold">Principle Return Date : </span>
+                    <span class="view-item-value">{{viewData?.prncpl_rtrn_dt | date:'dd MMM yyy'}}</span>
+                  </div>
+                </ion-col>
+
+
+                  <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="6" class="left-box">
+                    <div class=" view-element">
+                      <i class="chart material-icons">insert_chart_outlined</i>
+                      <span class="text-name-bold">Interest TDS (%) : </span>
+                      <span>{{viewData?.tds}}</span>
+                    </div>
+                  </ion-col>
+
+                  <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="6" class="middle-box" >
+                    <div class=" view-element">
+                      <i class="chart material-icons">insert_chart_outlined</i>
+                      <span class="text-name-bold">Brokerage TDS (%) : </span>
+                      <span>{{viewData?.brokerage_tds}}</span>
+                    </div>
+                  </ion-col>
+                
+              </ion-row>
+             
+              <ion-row>
+                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="viewData?.cycle_days > 0">
+                  <div class=" view-element">
+                    <i class="material-icons date">today</i>
+                    <span class="text-name-bold">Cycle Days : </span>
+                    <span>{{viewData?.cycle_days}}</span>
+                  </div>
+                </ion-col>
+                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box" *ngIf="viewData?.cycle_days == 0">
+                  <div class=" view-element">
+                    <i class="material-icons date">today</i>
+                    <span class="text-name-bold">Cycle Months : </span>
+                    <span>{{viewData?.cycle_month}}</span>
+                  </div>
+                </ion-col>
+                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="middle-box">
+                  <div class=" view-element">
+                    <i class="material-icons date">calendar_today</i>
+                    <span class="text-name-bold">Due Date: </span>
+                    <span class="view-item-value">{{viewData?.start_date | date:'dd MMM yyy'}}</span>
+                  </div>
+                </ion-col>
+                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="middle-box">
+                  <div class=" view-element">
+                    <i class="material-icons date">calendar_today</i>
+                    <span class="text-name-bold">Due Date : </span>
+                    <span class="view-item-value">{{viewData?.end_date | date:'dd MMM yyy'}}</span>
+                  </div>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                    <div class="view-element">
+                      <i class="principle material-icons">attach_money</i>
+                      <span class="text-name-bold">Principle : </span>
+                      <span>{{viewData?.principle}}</span>
+                    </div>
+                  </ion-col>
+                  <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="middle-box">
+                    <div class=" view-element">
+                      <i class="chart material-icons">assessment</i>
+                      <span class="text-name-bold">Monthly Interest Rate (%) : </span>
+                      <span>{{viewData?.interest_rate}}</span>
+                    </div>
+                  </ion-col>
+                  <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="middle-box">
+                    <div class=" view-element">
+                      <i class="chart material-icons">insert_chart_outlined</i>
+                      <span class="text-name-bold">Monthly Brokerage Rate (%) : </span>
+                      <span>{{viewData?.brokerage}}</span>
+                    </div>
+                  </ion-col>
+                </ion-row>
+
+              <!-- upload file show start -->
+              <ion-row *ngIf="viewData?.files.length > 0" class="view-table">
+                <ion-col size-xs="12" size-sm="12" size-md="12"  size-lg="12">
+                    <div style="overflow-x:auto;" class="uploading-info">
+                        <table>
+                            <thead >
+                                <tr>
+                                    <th style="padding-left: 3px;">
+                                        <span>
+                                            <ion-icon style="zoom:2.0;" name="information"></ion-icon>
+                                        </span>
+                                    </th>
+                                    <!-- table header -->
+                                    <th>
+                                        <span>Extension</span>
+                                    </th>
+                                    <th>
+                                        <span>File Name</span>
+                                    </th>
+                                    <th>
+                                        <span>File Size</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let file of viewData.files;let i= index">
+                                    <td>
+
+                                        <span>{{i + 1}}</span>
+                                    </td>
+                                    <td>
+                                        <span>{{ file.file_extension }}</span>
+                                    </td>
+                                    <td>
+                                        <span>
+                                          {{file.file_name}}
+                                        </span>
+                                        <span >
+
+                                          <ion-icon tooltip="View" flow="up" delay="500" name="eye"  class="file-preview-show" (click)="uploadFilePreview('file_preview', file, viewData.files)" *ngIf="file.file_extension == 'png' || file.file_extension == 'jpeg' || file.file_extension == 'jpg' || file.file_extension == 'gif'"></ion-icon>
+                                          
+                                          <a style="position: relative; top:3px; left:5px;" href="{{main_url}}/{{file.file_path}}" target="_blank">
+                                            <ion-icon name="download"></ion-icon>
+                                          </a>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span>{{ file.file_size |  fileSizeConvert }}</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </ion-col>
+              </ion-row>
+              <!-- upload file show end -->
+
+              <!-- pdc -->
+              <ion-row >
+                <div class="detail-information view-item-value">
+                    <!-- <ion-col style="border: none;" [hidden]="!viewData?.pdcs">
+                        <span style="float: left; display: inherit; ">
+                            <span>Add detailed information releated to PDC   </span>
+                            <span (click)="toggleShow = !toggleShow" class="click-here">
+                                {{!toggleShow ? 'click here' : 'Hide' }}
+                            </span>
+                        </span>
+                    </ion-col> -->
+                    <ion-grid style="width: 900px; margin-top: 8px;" class="detail-information-pdc" [hidden]="toggleShow" *ngFor="let item of viewData?.pdcs; let i = index;  let first = first;  let odd = odd" [ngClass]="{ 'odd-pdc-row': odd}">
+                      <ion-row [hidden]="!viewData?.pdcs">
+
+                        <!--(+ -) button start -->
+                        <ion-col size-xs="12" size-sm="12" size-md="12"  size-lg="12" class="button-add-remove-wrapper">
+                            <span class="title">PDC information {{i + 1}}</span>
+                        </ion-col>
+
+                      </ion-row>
+
+                        <!-- (+ -) button end -->
+                        <div class="psc-single-item" [hidden]="!viewData?.pdcs">
+                          <ion-row >
+                            <!-- <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="6" class="left-box">
+                              <div class="view-element">
+                                <i class="principle material-icons">person_outline</i>
+                                <span class="text-name-bold">Bank Account :</span>
+                                <span class="view-item-value">{{item?.bank_acc}}</span>
+                              </div>
+                            </ion-col>
+                            <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="6" class="middle-box">
+                              <div class=" view-element">
+                                <i class="principle material-icons">group_work</i>
+                                <span class="text-name-bold">Routing :</span>
+                                <span class="view-item-value">{{item?.routing}}</span>
+                              </div>
+                            </ion-col> -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                              <div class=" view-element">
+                                <i class="principle material-icons">account_balance</i>
+                                <span class="text-name-bold">Bank Name :</span>
+                                <span class="view-item-value">{{item?.bank_name}}</span>
+                              </div>
+                            </ion-col>
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="middle-box">
+                              <div class=" view-element">
+                                <i class="principle material-icons">account_balance</i>
+                                <span class="text-name-bold">Branch Name :</span>
+                                <span class="view-item-value">{{item?.branch_name}}</span>
+                              </div>
+                            </ion-col>
+                            <!-- <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="middle-box">
+                              <div class=" view-element">
+                                <i class="principle material-icons">insert_chart_outlined</i>
+                                <span class="text-name-bold">Docket :</span>
+                                <span class="view-item-value">{{item?.docket}}</span>
+                              </div>
+                            </ion-col> -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="middle-box">
+                              <div class=" view-element">
+                                <i class="principle material-icons">bookmark_border</i>
+                                <span class="text-name-bold">Cheque No :</span>
+                                <span class="view-item-value">{{item?.cheque_no}}</span>
+                              </div>
+                            </ion-col>
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                              <div class=" view-element">
+                                <i class="principle material-icons">calendar_today</i>
+                                <span class="text-name-bold">Cheque Date :</span>
+                                <span class="view-item-value">{{item?.check_date | date:'dd MMM yyy' }}</span>
+                              </div>
+                            </ion-col>
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="middle-box">
+                              <div class=" view-element">
+                                <i class="principle material-icons">attach_money</i>
+                                <span class="text-name-bold">Cheque Amount :</span>
+                                <span class="view-item-value">{{item?.check_amt}}</span>
+                              </div>
+                            </ion-col>
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="middle-box">
+                              <div class=" view-element">
+                                <i class="principle material-icons">textsms</i>
+                                <span class="text-name-bold">Comments :</span>
+                                <span class="view-item-value">{{item?.comment}}</span>
+                              </div>
+                            </ion-col>
+                          </ion-row>
+                        
+                          <!-- upload file show start -->
+                          <ion-row *ngIf="item?.file_model_pdc.length > 0" class="view-table">
+                            <ion-col size-xs="12" size-sm="12" size-md="12"  size-lg="12">
+                                <div style="overflow-x:auto;" class="uploading-info">
+                                    <table>
+                                        <thead >
+                                            <tr>
+                                                <th style="padding-left: 3px;">
+                                                    <span>
+                                                        <ion-icon style="zoom:2.0;" name="information"></ion-icon>
+                                                    </span>
+                                                </th>
+                                                <!-- table header -->
+                                                <th>
+                                                    <span>Extension</span>
+                                                </th>
+                                                <th>
+                                                    <span>File Name</span>
+                                                </th>
+                                                <th>
+                                                    <span>File Size</span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let file of item.file_model_pdc;let i= index">
+                                                <td>
+
+                                                    <span>{{i + 1}}</span>
+                                                </td>
+                                                <td>
+                                                    <span>{{ file.file_extension }}</span>
+                                                </td>
+                                                <td>
+                                                    <span>
+                                                      {{file.file_name}}
+                                                    </span>
+                                                    <span >
+                                                        <ion-icon tooltip="View" flow="up" delay="500" name="eye"  class="file-preview-show" (click)="uploadFilePreview('file_preview', file, viewData.files)" *ngIf="file.file_extension == 'png' || file.file_extension == 'jpeg' || file.file_extension == 'jpg' || file.file_extension == 'gif'"></ion-icon>
+                                                        
+                                                        <a style="position: relative; top:3px; left:5px;" href="{{main_url}}/{{file.file_path}}" target="_blank">
+                                                          <ion-icon name="download"></ion-icon>
+                                                        </a>
+                                                      </span>
+                                                </td>
+                                                <td>
+                                                    <span>{{ file.file_size |  fileSizeConvert }}</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </ion-col>
+                          </ion-row>
+                          <!-- upload file show end -->
+                        </div>
+
+                    </ion-grid>
+                </div>
+              </ion-row>
+            </ion-grid>
+
+            <!-- tab -->
+            <ion-grid>
+              <ion-row class="tab" style="margin-top: 10px;" *ngIf="!viewLoadData">
+                <ion-col size="12">
+                  <ion-row>
+
+                    <!-- Interest -->
+                    <ion-col [ngClass]="{'active':tabOptions=='1'}" size-xs="4" size-sm="6" size-md="2"  size-lg="2" (click)="viewInterestBrokerage('interest')">
+                      <ion-item class=" lender-tab text-center" >
+                        <input type="radio" id="ritema" value="1" [ngModelOptions]="{standalone: true}" [(ngModel)]="tabOptions">
+                        <i class="chart material-icons">bar_chart</i>
+                        <span>Interest</span>
+                      </ion-item>
+                    </ion-col>
+
+                    <!-- Brokerage -->
+                    <ion-col [ngClass]="{'active':tabOptions=='2'}" size-xs="4" size-sm="6" size-md="2"  size-lg="2" [hidden]="isGroupLenderClick" (click)="viewInterestBrokerage('brokerage')">
+                      <ion-item class=" borrower-tab text-center">
+                        <input type="radio" id="ritemb" value="2"  [ngModelOptions]="{standalone: true}" [(ngModel)]="tabOptions">
+                        <i class="date material-icons">class</i>
+                        <span>Invoice</span>
+                      </ion-item>
+                    </ion-col>
+
+                    <!-- History -->
+                    <ion-col *ngIf="viewData?.history_transaction_id" [ngClass]="{'active':tabOptions=='3'}" size-xs="4" size-sm="6" size-md="2"  size-lg="2" [hidden]="isGroupLenderClick" (click)="viewInterestBrokerage('history')">
+                      <ion-item class=" borrower-tab text-center">
+                        <input type="radio" id="ritemc" value="3"  [ngModelOptions]="{standalone: true}" [(ngModel)]="tabOptions">
+                        <i class="principle material-icons">history</i>
+                        <span>History</span>
+                      </ion-item>
+                    </ion-col>
+
+                    <!-- Conflicted -->
+                    <ion-col *ngIf="viewData?.is_conflicted !== 0 && get_user_type !== 'group'" [ngClass]="{'active':tabOptions=='4'}" size-xs="4" size-sm="6" size-md="2"  size-lg="2" [hidden]="isGroupLenderClick" (click)="viewInterestBrokerage('history')">
+                      <ion-item class=" borrower-tab text-center">
+                        <input type="radio" id="ritemc" value="4"  [ngModelOptions]="{standalone: true}" [(ngModel)]="tabOptions">
+                        <i class="principle material-icons">rotate_right</i>
+                        <span>Conflicted</span>
+                      </ion-item>
+                    </ion-col>
+
+                  </ion-row>
+                </ion-col>
+                <ion-col size="12">
+                  <div [ngSwitch]="tabOptions">
+
+                    <!-- interest tab data -->
+                    <div class="tab-window company-info-body" *ngSwitchCase="'1'">
+                      <div class="table-outer2" style="overflow-x:auto;">
+                        <table class="data-table">
+                          <thead>
+                            <tr>
+                  
+                              <th style="padding-left: 3px;">
+                                <span>
+                                    <ion-icon style="zoom:2.0;" name="information"></ion-icon>
+                                </span>
+                              </th>
+                  
+                              <th>
+                                <div class="ion-checkbox" [hidden]="isListLoading">
+                                  <ion-checkbox slot="end" name="select_all_item" [(ngModel)]="allselectModel"></ion-checkbox>
+                                </div>
+                              </th> 
+                  
+                              <!-- table header -->
+                              <th *ngFor="let th of tableHeaderData " [hidden]="th.is_default == 0" >
+                                <span>{{th.display_name}}</span>
+                                <!-- sorting header -->
+                                <!-- <span *ngIf="th.is_sortable == 1">
+                                  <span class="asc-sort" [hidden]="th.sortingButtonName == 'desc'" [ngClass]="{'active': th.sortingButtonName == 'asc'}">
+                                    <ion-icon name="arrow-dropup"></ion-icon>
+                                  </span>
+                                  <span class="desc-sort" [hidden]="th.sortingButtonName == 'asc'" [ngClass]="{'active': th.sortingButtonName == 'desc'}">
+                                    <ion-icon name="arrow-dropdown"></ion-icon>
+                                  </span>
+                                </span> -->
+                              </th>
+                  
+                              <th>
+                                <span>Payment Details</span>
+                              </th>
+                  
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr title="{{item?.reject_reason}}" *ngFor="let item of viewData?.interest; let i = index" [hidden]="isListLoading">
+                                <td data-title="ID">
+                                  <!-- <span>{{i + 1}}</span> -->
+                                  <span>{{i + 1}}</span>
+                                </td>
+                                <td>         
+                                    <ion-checkbox name="checkbox_name" [(ngModel)]="item.isSelected"  slot="end"  ></ion-checkbox>
+                                </td>
+                  
+                                <!-- table data -->
+                                <!-- <td *ngFor="let th of tableHeaderData | filtermulti: [{is_default:1},{is_display:1}]"> -->
+                                  <td *ngFor="let th of tableHeaderData " [hidden]="th.is_default == 0">
+                  
+                                    <!-- company -->
+                                    <span class="list-more-hide" *ngIf="th.column_name === 'landerborrower'">
+                                      <span>
+                                          {{item.lenderborrower?.name}}
+                                      </span>
+                                    </span>
+                  
+                                    <!-- creator date -->
+                                    <span *ngIf="th.column_name === 'pay_date'">
+                                      {{item[th.column_name] | date:'dd MMM yyy'}}
+                                    </span>
+                                    
+                                    <!-- interest_status_name -->
+                                    <span *ngIf="th.column_name === 'pymnt_status'" class="listing-status" [ngClass]="{'success':item?.interest_status_name == 'Completed','danger':item?.interest_status_name == 'Rejected Payment','warning':item?.paymentpeceived?.payment_mode == 'cheque' && item?.interest_status_name == 'Running'}">
+                                      {{item?.interest_status_name}}
+                                    </span>
+
+                                    <span class="action" *ngIf="th.column_name === 'remarks'">
+                                      <span *ngIf="item?.description" title="{{item?.description}}">
+                                        <ion-button>
+                                          <ion-icon slot="icon-only" name="star"></ion-icon>
+                                        </ion-button>
+                                      </span>
+
+                                      <span *ngIf="item?.reject_reason" title="{{item?.reject_reason}}">
+                                        <ion-button color="danger">
+                                          <ion-icon slot="icon-only" name="star"></ion-icon>
+                                        </ion-button>
+                                      </span>
+
+                                      <span *ngIf="!item?.reject_reason && !item?.description">No Remarks</span>
+                                    </span>
+
+                                    <!--all  common -->
+                                    <span *ngIf="th.column_name !== 'landerborrower' && th.column_name !== 'pay_date' && th.column_name !== 'gst_amt' && th.column_name !== 'pymnt_status'"> {{ item[th.column_name] }} </span>
+                                </td>
+                                <td>
+                                    <span style="pointer: cursor;" title="Click for more details" (click)="showPaymentDetails('payment_details', file, item?.paymentpeceived)" *ngIf="item?.paymentpeceived?.payment_mode">
+                                      {{item?.paymentpeceived?.payment_mode}}
+                                    </span>
+                                </td>
+                  
+                                <!-- <td class="action">
+                                  <ion-button tooltip="Edit" flow="up" delay="500" [routerLink]="['/', 'add-role', 'edit', item.id]" >
+                                    <ion-icon name="create"></ion-icon>
+                                  </ion-button>
+                                </td> -->
+                            </tr>
+                            <!-- [hidden]="fetchItems?.length > 0  -->
+                            <tr [hidden]="!isListLoading" class="loading-table-data">
+                              <td colspan="100">
+                                <span style="font-size: 16px;">Data is loading...</span>
+                              </td>
+                            </tr>
+                            <tr *ngIf="viewData?.interest?.length == 0 && !isListLoading" class="loading-table-data">
+                              <td colspan="100">
+                                  No Data Found
+                              </td>
+                            </tr>
+                          </tbody>
+                          <tfoot *ngIf="viewData?.interestone?.review_tds_amt !== null && viewData?.interestone?.review_tds_amt !== 0.00 && viewData?.interestone?.review_tds_amt !== '0.00' && viewData?.interestone?.review_tds_amt !== 0 && viewData?.interestone?.review_tds_amt !== '0' && viewData?.transaction_status == '1' && !isListLoading">
+                            <tr>
+                              <td colspan="6"><em class="tds-msg">You have a pending amount Rs. {{viewData?.interestone?.review_tds_amt}} Which Previous deducted by TDS is not applicable</em> </td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
+                    </div>
+
+                    <!-- brokerage tab data -->
+                    <div class="tab-window" *ngSwitchCase="'2'">
+                      <div class="table-outer2" style="overflow-x:auto;">
+                        <table class="data-table">
+                          <thead>
+                            <tr>
+                  
+                              <th style="padding-left: 3px;">
+                                <span>
+                                    <ion-icon style="zoom:2.0;" name="information"></ion-icon>
+                                </span>
+                              </th>
+                  
+                              <th>
+                                <div class="ion-checkbox" [hidden]="isListLoading">
+                                  <ion-checkbox slot="end" name="select_all_item" [(ngModel)]="allselectModel"></ion-checkbox>
+                                </div>
+                              </th>
+                              <th>
+                                <span>Invoice Number</span>
+                              </th>
+                              <th>
+                                <span>Paid Amount</span>
+                              </th>
+                              <th>
+                                <span>Payment Date</span>
+                              </th>
+                              <th>
+                                <span>Payment Status</span>
+                              </th>
+                              <th>
+                                <span>Action</span>
+                              </th>
+                  
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let item of viewData?.brokeragelist; let i = index" [hidden]="isListLoading">
+                                <td data-title="ID">
+                                  <!-- <span>{{i + 1}}</span> -->
+                                  <span>{{i + 1}}</span>
+                                </td>
+                                <td>         
+                                    <ion-checkbox name="checkbox_name" [(ngModel)]="item.isSelected"  slot="end"  ></ion-checkbox>
+                                </td>
+                  
+                                <!-- table data -->
+                                <!-- <td *ngFor="let th of tableHeaderData | filtermulti: [{is_default:1},{is_display:1}]"> -->
+                                  <td><span>{{item?.paymentpeceived.invoice.show_invoice_number}}</span></td>
+                                  <td><span>{{item?.paymentpeceived.interest_pay_total}}</span></td>
+                                  <td><span>{{item?.paymentpeceived.pay_date | date:'dd MMM yyy'}}</span></td>
+                                  <td><span class="listing-status" [ngClass]="{'success':item?.paymentpeceived.brokerage_status_name == 'Completed', 'danger':item?.paymentpeceived.brokerage_status_name == 'Rejected Payment',  'warning':item?.paymentpeceived.brokerage_status_name == 'Running'}">{{item?.paymentpeceived.brokerage_status_name}}</span></td>
+                                <td class="action">
+                                  <!-- Export -->
+                                  <ion-button color="primary" tooltip="Invoice" flow="up" delay="500" (click)="onExport('single', fetchItems, item)" >
+                                    <ion-icon name="book"></ion-icon>
+                                </ion-button>
+                                </td>
+                            </tr>
+                            <!-- [hidden]="fetchItems?.length > 0  -->
+                            <tr [hidden]="!isListLoading" class="loading-table-data">
+                              <td colspan="100">
+                                <span style="font-size: 16px;">Data is loading...</span>
+                              </td>
+                            </tr>
+                            <tr *ngIf="viewData?.brokeragelist?.length == 0 && !isListLoading" class="loading-table-data">
+                              <td colspan="100">
+                                  No Data Found
+                              </td>
+                            </tr>
+                          </tbody>
+                          <tfoot *ngIf="viewData?.brokerageone?.review_tds_amt !== null && viewData?.brokerageone?.review_tds_amt !== 0.00 && viewData?.brokerageone?.review_tds_amt !== '0.00' && viewData?.brokerageone?.review_tds_amt !== 0 && viewData?.brokerageone?.review_tds_amt !== '0' && viewData?.brokerageone?.pymnt_status == '2' && !isListLoading">
+                            <tr>
+                              <td colspan="6"><em class="tds-msg">You have a pending amount Rs. {{viewData?.brokerageone?.review_tds_amt}} Which Previous deducted by TDS is not applicable </em></td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
+                    </div>
+
+                    <!-- History tab data -->
+                    <div class="tab-window" *ngSwitchCase="'3'">
+                      <div class="table-outer2" style="overflow-x:auto;">
+                        <table class="data-table">
+                          <thead>
+                            <tr>
+                  
+                              <th style="padding-left: 3px;">
+                                <span>
+                                    <ion-icon style="zoom:2.0;" name="information"></ion-icon>
+                                </span>
+                              </th>
+                              <th>
+                                <span>Parent Transaction Id</span>
+                              </th>
+                              <th>
+                                <span>Start Date</span>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let item of viewData?.parent_transaction; let i = index" [hidden]="isListLoading">
+                                <td data-title="ID">
+                                  <!-- <span>{{i + 1}}</span> -->
+                                  <span>{{i + 1}}</span>
+                                </td>
+                  
+                                <!-- table data -->
+                                <!-- <td *ngFor="let th of tableHeaderData | filtermulti: [{is_default:1},{is_display:1}]"> -->
+                                  <td><span>{{item?.dgr_transaction_id}}</span></td>
+                                  <td><span>{{item?.start_date | date:'dd MMM yyy'}}</span></td>
+                                
+                            </tr>
+                            <!-- [hidden]="fetchItems?.length > 0  -->
+                            <tr [hidden]="!isListLoading" class="loading-table-data">
+                              <td colspan="100">
+                                <span style="font-size: 16px;">Data is loading...</span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <!-- Conflicted tab data -->
+                    <div class="tab-window" *ngSwitchCase="'4'">
+                      <div class="table-outer2" style="overflow-x:auto;">
+                        <table class="data-table">
+                          <thead>
+                            <tr>
+                              <th>
+                                <span>Payment Date</span>
+                              </th>
+                              <th>
+                                <span>Description</span>
+                              </th>
+                              <th>
+                                <span>Conflicted Status</span>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                                  <td>
+                                    <span>{{viewData?.conflicted_recived_date | date:'dd MMM yyy'}}</span>
+                                  </td>
+                                  <td><span>{{viewData?.conflicted_comment}}</span></td>
+                                  <td>
+                                    <span class="listing-status" [ngClass]="{'success':viewData?.conflicted_status == '1', 'warning':viewData?.conflicted_status == '0'}">{{viewData?.conflicted_status_name}}</span>
+                                  </td>
+                                
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  
+</ion-content>
+
+<!-- common footer show -->
+<common-footer></common-footer>

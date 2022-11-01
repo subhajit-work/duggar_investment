@@ -1,0 +1,242 @@
+<!-- common header show -->
+<common-header></common-header>
+ 
+<ion-content class="page-wrapper" *ngIf="permissionArray">
+  <div class="page-inner">
+    <!-- ------------ sub Header Start ----------------->
+    <ion-row class="sub-header width-100 pull-left nomargin nopadding">
+      <ion-col size-xs="7" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+        <div class = "sub-header-color pull-left width-100 font-size-18 vertical-middle">
+          <span>Notification Listing </span>
+          <ion-button class="font-size-11" tooltip="Add Account Type" flow="up" delay="500" [routerLink]="['/', 'add-notification', 'add', 'id', 'identifire']" *ngIf="permissionArray[1]?.permission_access > 0">
+            <ion-icon name="add"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-col>
+      <ion-col size-xs="5" size-sm="6" class = "transaction-inner pull-left width-100 padding-10">
+        <div class = "sub-header-color width-100 text-right">
+          <span class="font-size-13"> {{curentDate | date:'dd MMM yyy'}} <i>|</i> {{curentDate | date:'h:mm a '}}</span>
+        </div>
+      </ion-col>
+    </ion-row>
+    <!-- ------------ sub Header End ----------------->
+    <ion-row class="display-search width-100">
+      <ion-col size-xs="12" size-sm="8" class="text-center">
+        <!-- display record start -->
+        <div class="display-records">
+            <ion-item class="record" lines="none">
+              <span>Records: </span>
+                <mat-select [(ngModel)]="displayRecord" name="food" (selectionChange)="displayRecordChange($event.value)">
+                  <mat-option *ngFor="let record of displayRecords" [value]="record.displayValue">
+                    {{record.displayValue}}
+                  </mat-option>
+                </mat-select>
+            </ion-item>
+            <span class="buttons pull-left">
+              <!-- mobile search button show -->
+              <ion-button class="mobile-search" tooltip="Search" flow="up" delay="500" (click)="toggleMobileSearch = !toggleMobileSearch">
+                <ion-icon name="search"></ion-icon>
+              </ion-button>
+            </span>
+        </div>
+        <!-- display record end -->
+      </ion-col>
+      <!-- ======= search for mobile start ======= -->
+      <ion-col size-xs="12" size-sm="4" class="ion-float-right" class="left-search" *ngIf="!!toggleMobileSearch">
+          <ion-item lines="none">
+            <ion-searchbar placeholder="Search"  debounce="1000" [(ngModel)]="searchTerm" (ionChange)="searchList($event)"> </ion-searchbar>
+          </ion-item>
+        </ion-col>
+        <!-- ====== search for mobile end ========= -->
+      <!-- search start -->
+      <ion-col size-xs="12" size-sm="4" class="ion-float-right" class="left-search left-search-mobile">
+        <ion-item lines="none">
+          <ion-searchbar placeholder="Search"  debounce="1000" [(ngModel)]="searchTerm" (ionChange)="searchList($event)"> </ion-searchbar>
+        </ion-item>
+      </ion-col>
+      <!-- search end -->
+    </ion-row>
+
+    <!-- list data show in table format start -->
+    <div class="table-outer" style="overflow-x:auto;">
+      <table class="data-table">
+          <thead [ngClass]="{'disabled-only-pointer':isListLoading}">
+          <tr>
+
+            <th style="padding-left: 3px;">
+              <span>
+                  <ion-icon style="zoom:2.0;" name="information"></ion-icon>
+              </span>
+            </th>
+
+            <th>
+              <div class="ion-checkbox" [hidden]="isListLoading">
+                <ion-checkbox slot="end" name="select_all_item" [(ngModel)]="allselectModel" (ionChange)="allSelectItem($event)"></ion-checkbox>
+              </div>
+            </th> 
+
+            <!-- table header -->
+            <th *ngFor="let th of tableHeaderData " [hidden]="th.is_default == 0 || isListLoading" (click)="th.is_sortable == 1 && isSortTableHeader(tableHeaderData, th)">
+              <span>{{th.display_name}}</span>
+              <!-- sorting header -->
+              <span *ngIf="th.is_sortable == 1">
+                <span class="asc-sort" [hidden]="th.sortingButtonName == 'desc'" [ngClass]="{'active': th.sortingButtonName == 'asc'}">
+                  <ion-icon name="arrow-dropup"></ion-icon>
+                </span>
+                <span class="desc-sort" [hidden]="th.sortingButtonName == 'asc'" [ngClass]="{'active': th.sortingButtonName == 'desc'}">
+                  <ion-icon name="arrow-dropdown"></ion-icon>
+                </span>
+              </span>
+            </th>
+
+            <th>
+              <span>Action</span>
+            </th>
+
+            <th class="column-selection-popover" tooltip="Select Column" flow="left" delay="500">
+                <ion-icon name="options" style="zoom:2.0;" (click)="openColumnselection($event)" ></ion-icon>
+            </th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of fetchItems; let i = index" [hidden]="isListLoading" [ngClass]="{'hilight_activated': (activeHighlightIndex == listAlldata.from + i), 'delete_item_effect':item?.deleteLodershow}">
+              <td data-title="ID">
+                <!-- <span>{{i + 1}}</span> -->
+                <span>{{listAlldata.from + i}}</span>
+              </td>
+              <td>         
+                  <ion-checkbox name="checkbox_name" [(ngModel)]="item.isSelected"  slot="end"  (ionChange)="onCheckboxSelect(item, $event)"></ion-checkbox>
+              </td>
+
+              <!-- table data -->
+              <!-- <td *ngFor="let th of tableHeaderData | filtermulti: [{is_default:1},{is_display:1}]"> -->
+                <td *ngFor="let th of tableHeaderData " [hidden]="th.is_default == 0">
+
+                  <!-- main default check -->
+                  <span class="list-more-hide" *ngIf="th.column_name === 'main'">
+                    <span >
+                        <div class="radio-item">
+                          <input type="radio" id="mainAcc_{{i}}" value="{{i}}" name="item.is_selected" [(ngModel)]="selectmainAccount" (ngModelChange)="changeMainAccount(item.id)">
+                          <label for="mainAcc_{{i}}">Main Account </label>
+                        </div>
+                        <!-- <ion-radio mode="md" item-left value="{{i}}"></ion-radio> -->
+                    </span>
+                  </span>
+
+                  <!-- creator date -->
+                  <span *ngIf="th.column_name === 'updated_at'">
+                    {{item[th.column_name] | date:'dd MMM yyy : h:mm a'}}
+                  </span>
+
+                  <!--all  common -->
+                  <span *ngIf="th.column_name !== 'main' && th.column_name !== 'updated_at'"> {{ item[th.column_name] }} </span>
+              </td>
+
+              <td class="action">
+                <!-- Edit -->
+                <ion-button tooltip="Edit" flow="up" delay="500" [routerLink]="['/', 'add-notification', 'edit', item.id, 'identifire']" (click)="clickItemHighlight(listAlldata.from + i)"  *ngIf="(permissionArray[2]?.permission_access > 0 && (item.created_by == loggedin_user_id)) || permissionArray[2]?.permission_access == 4">
+                  <ion-icon name="create"></ion-icon>
+                </ion-button>
+
+                <!-- enable/disable button start -->
+                <ion-button color="success" tooltip="Enable" delay="500" (click)="enabledDisabled('single', item, '');" *ngIf="(permissionArray[2]?.permission_access > 0 && (item.created_by == loggedin_user_id))&& item.status == '1' || permissionArray[2]?.permission_access == 4 && item.status == '1'">
+                  <ion-icon name="eye"></ion-icon>
+                </ion-button>
+                <ion-button color="medium" tooltip="Disable" delay="500" (click)="enabledDisabled('single', item, '');" *ngIf="(permissionArray[2]?.permission_access > 0 && (item.created_by == loggedin_user_id)) && item.status == '0' || permissionArray[2]?.permission_access == 4 && item.status == '0' ">
+                  <ion-icon name="eye"></ion-icon>
+                </ion-button>
+                <!-- enable/disable button end -->
+
+                <!-- Delete -->
+                <ion-button tooltip="Delete" flow="up" delay="500" color="danger" (click)="onClickDeleteItem('single', item, fetchItems, i)" *ngIf="(permissionArray[5]?.permission_access > 0 && (item.created_by == loggedin_user_id)) || (permissionArray[5]?.permission_access == 4)">
+                  <ion-icon *ngIf="!item?.deleteLodershow"  name="md-trash"></ion-icon>
+                  <ion-spinner *ngIf="item?.deleteLodershow" class="delete-spinner" name="crescent"></ion-spinner>
+                </ion-button>
+              </td>
+
+          </tr>
+          <!-- [hidden]="fetchItems?.length > 0  -->
+          <tr [hidden]="!isListLoading" class="loading-table-data">
+            <td colspan="100">
+              <span style="font-size: 16px;">Data is loading...</span>
+            </td>
+          </tr>
+          <tr *ngIf="fetchItems?.length == 0 && !isListLoading" class="loading-table-data">
+            <td colspan="100">
+                No Data Found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- list data show in table format end -->
+  </div>
+  
+  <!-- pager start -->
+  <ion-row  [ngClass]="{'disabled':isListLoading}">
+    <ion-col size-xs="12" class="footer pull-left nomargin nopadding width-100">
+    <ul class="left-menu pull-left padding-left-0 margin-top-14">
+      <li>
+        <!-- refresh button -->
+        <ion-button class="background-orange" tooltip="Refresh" flow="right" delay="500" (click)="onRefreshPage($event)" >
+            <ion-icon name="refresh"></ion-icon>
+        </ion-button>
+
+        <!-- enable button status -->
+        <ion-button class="footer-list-button" color="success" tooltip="Enable" delay="500" [ngClass]="{'disabled':checkedList.length == 0}" (click)="enabledDisabled('multiple', '1', fetchItems);">
+          <ion-icon name="eye"></ion-icon>
+        </ion-button>
+
+        <!-- disable button status -->
+        <ion-button class="footer-list-button" color="medium" tooltip="Disable" delay="500" [ngClass]="{'disabled':checkedList.length == 0}" (click)="enabledDisabled('multiple', '0', fetchItems);">
+          <ion-icon name="eye"></ion-icon>
+        </ion-button>
+        <!-- enable/disable button end -->
+        
+        <!-- multiple delete button -->
+        <ion-button class="background-danger" tooltip="Selected Delete" flow="up" delay="500" [ngClass]="{'disabled':checkedList.length == 0 || alldeleteLoaderShow}" (click)="onClickDeleteItem('multiple', '', fetchItems, '')" >
+          <ion-icon *ngIf="!alldeleteLoaderShow"  name="md-trash"></ion-icon>
+          <ion-spinner *ngIf="alldeleteLoaderShow" class="delete-spinner" name="crescent"></ion-spinner>
+        </ion-button>
+      </li>
+    </ul>
+    <ul *ngIf="pager.pages && pager.pages.length" class="pagination">
+        <li class="circle-border" [ngClass]="{disabled:pager.currentPage === 1}">
+            <a (click)="setPage(1)" tooltip="First" flow="up" delay="500">
+              <!-- First -->
+              <ion-icon name="skip-backward"></ion-icon>
+            </a>
+        </li>
+        <li class="circle-border" [ngClass]="{disabled:pager.currentPage === 1}">
+            <a (click)="setPage(pager.currentPage - 1)" tooltip="Previous" flow="up" delay="500">
+              <!-- Previous -->
+              <ion-icon name="arrow-dropleft-circle"></ion-icon>
+            </a>
+        </li>
+        <li> <span class="ran-separator pull-right margin-top-3"></span> </li>
+        <li>
+            Page <a>{{ pager.currentPage }}</a> of {{ pager.totalPages }} 
+        </li>
+        <li> <span class="ran-separator pull-right margin-top-3"></span> </li>
+        <li class="circle-border" [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+            <a (click)="setPage(pager.currentPage + 1)" tooltip="Next" flow="up" delay="500">
+              <!-- Next -->
+              <ion-icon name="arrow-dropright-circle"></ion-icon>
+            </a>
+        </li>
+        <li class="circle-border" [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+            <a (click)="setPage(pager.totalPages)" tooltip="Last" flow="up" delay="500">
+              <!-- Last -->
+              <ion-icon name="skip-forward"></ion-icon>
+            </a>
+        </li>
+    </ul>
+    </ion-col>
+  </ion-row>
+ <!-- pager end -->
+
+</ion-content>
+
+<!-- common footer show -->
+<common-footer></common-footer>

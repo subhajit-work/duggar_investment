@@ -1,0 +1,787 @@
+<!-- common header show -->
+<common-header></common-header>
+ 
+<ion-content class="page-wrapper">
+    <div class="page-inner">
+        <ion-row class="width-100 sub-header nomargin nopadding">
+            <ion-col size-xs="7" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+                <div class = "sub-header-color pull-left width-100 font-size-18 vertical-middle">
+                    <span>{{actionHeaderText}} Transaction</span>
+                </div>
+            </ion-col>
+            <ion-col size-xs="5" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+                <div class = "sub-header-color width-100 text-right">
+                <span class="font-size-13"> {{curentDate | date:'dd MMM yyy'}} <i>|</i> {{curentDate | date:'h:mm a '}}</span>
+                </div>
+            </ion-col>
+        </ion-row>
+        <div class="add-new-page-body" [ngClass]="{'disabled': form_submit_text == 'Submitting'}">
+
+            <!-- loading -->
+            <div class="edit-loading-page" *ngIf="editLoading">
+                <span>
+                    <ion-spinner name="lines"></ion-spinner>
+                </span>
+            </div>
+
+            <form  #addForm="ngForm" (ngSubmit)="onSubmit(addForm)" >
+                <!-- for edit -->
+                <input *ngIf="actionHeaderText == 'Edit'" type="hidden" name="_method" [(ngModel)]="onEditField">
+
+                <!-- for renew -->
+                <input *ngIf="actionHeaderText == 'Renew'" type="hidden" name="is_renew" [(ngModel)]="is_renew">
+
+                <div class="add-new-page-underpart">
+                    <ion-grid>
+                        <ion-row>
+                            <!--  Transaction ID   -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="Only-view-fields due_date no-clear" *ngIf="actionHeaderText == 'Edit' || actionHeaderText == 'Renew'">
+                                <ion-label position="floating">Transaction ID  : 
+                                    <b>{{show_transaction_id}}</b>
+                                </ion-label>
+                            </ion-col>
+                            <!--  Fiscal Year  -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="Only-view-fields due_date no-clear">
+                                <ion-label position="floating">  Fiscal Year : {{fiscal_years}}</ion-label>
+                                <input type="hidden" name="fiscal_years" [(ngModel)]="fiscal_years">
+
+                                <input type="hidden" name="fiscal_years_id" [(ngModel)]="fiscalYearsId">
+                            </ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <!-- Account -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4">
+                                <ion-label position="floating"> Account Holder Name<sup>*</sup></ion-label>
+                                <!-- <ion-label  tooltip="Add Account" flow="up" delay="500" (click)="presentModal('company_id')" class="add-button" [hidden]="selectLoading || account">
+                                    <ion-icon name="add"></ion-icon>
+                                    Add 
+                                </ion-label> -->
+                                <ng-select #accountSearch
+                                    [loading]="selectLoading"
+                                    [dropdownPosition]="'bottom'"
+                                    placeholder="Please Select Account"
+                                    [items]="accountList"
+                                    bindLabel="name"
+                                    name="account_branch"
+                                    bindValue="id"
+                                    [searchable]="false"
+                                    [(ngModel)]="model.account_branch"
+                                    (change)="onChangeAccount(model.account_branch)"
+                                    required>
+                                    <ng-template ng-header-tmp>
+                                        <input placeholder="Search" class="dropdown-custom-search" type="text" (input)="accountSearch.filter($event.target.value)" [autofocus]="true"/>
+                                    </ng-template>
+                                </ng-select>
+                                <input type="hidden" name="short_code" [(ngModel)]="model.short_code"> 
+                            </ion-col>
+                            <!-- short_code > {{model.short_code}} -->
+                            <!-- Lender Group-->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4">
+                                <ion-label position="floating"> Lender Group</ion-label>
+
+                                <ion-label  tooltip="Add Lender Group" flow="up" delay="500" (click)="presentModal('lender_group_add', 'group', lenderGroupList, 'Add', 'Group (Lender)', '')" class="add-button" [hidden]="selectLoading || model.lgroup_id">
+                                    <!-- (indentife, url, array, type, displayName, id) -->
+                                    <ion-icon name="add"></ion-icon>
+                                    Add 
+                                </ion-label>
+
+                                <ion-label  tooltip="Edit Lender Group" flow="up" delay="500" (click)="presentModal('lender_group_add', 'group', lenderGroupList, 'Edit', 'Group (Lender)', model.lgroup_id)" class="add-button" [hidden]=" !model.lgroup_id">
+                                    <!-- (indentife, url, array, type, displayName, id) -->
+                                    <ion-icon name="add"></ion-icon>
+                                    Edit 
+                                </ion-label>
+
+                                <ng-select #lgroupSerch
+                                    [loading]="selectLoading"
+                                    [dropdownPosition]="'bottom'"
+                                    placeholder="Please Select Lender Group"
+                                    [items]="lenderGroupList"
+                                    bindLabel="name"
+                                    name="lgroup_id"
+                                    bindValue="id"
+                                    (change)="OnChangeSelectLender(model.lgroup_id, 'lenderGroup')"
+                                    [searchable]="false"
+                                    [(ngModel)]="model.lgroup_id">
+                                    <ng-template ng-header-tmp>
+                                        <input placeholder="Search" class="dropdown-custom-search" type="text" (input)="lgroupSerch.filter($event.target.value)" [autofocus]="true" [autofocus]="true" />
+                                    </ng-template>
+                                </ng-select>
+                            </ion-col>
+
+                            <!-- Lender-->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" [ngClass]="{'show-disable': !model.lgroup_id}">
+                                <ion-label position="floating"> Lender <sup>*</sup> </ion-label>
+
+                                <ion-label  tooltip="Add Lender" flow="up" delay="500" (click)="presentModal('lender_single_add', 'client', lenderList, 'Add', 'Client (Lender)', '')" class="add-button" [hidden]="selectLoading || model.lender_id">
+                                    <!-- (indentife, url, array, type, displayName, id) -->
+                                    <ion-icon name="add"></ion-icon>
+                                    Add 
+                                </ion-label>
+                                
+                                <ion-label  tooltip="Edit Lender" flow="up" delay="500" (click)="presentModal('lender_single_add', 'client', lenderList, 'Edit', 'Client (Lender)', model.lender_id)" class="add-button" [hidden]=" !model.lender_id">
+                                    <!-- (indentife, url, array, type, displayName, id) -->
+                                    <ion-icon name="add"></ion-icon>
+                                    Edit 
+                                </ion-label>
+                                <ng-select #lenderSerch
+                                    [loading]="selectLoadingDependLender"
+                                    [dropdownPosition]="'bottom'"
+                                    placeholder="Please Select Lender"
+                                    [items]="lenderList"
+                                    bindLabel="name"
+                                    name="lender_id"
+                                    bindValue="id"
+                                    (change)="onChangeSingleLender(model.lender_id, lenderList, 'lender_select')"
+                                    [searchable]="false"
+                                    [(ngModel)]="model.lender_id"
+                                    required>
+                                    <ng-template ng-header-tmp>
+                                        <input placeholder="Search" class="dropdown-custom-search" type="text" (input)="lenderSerch.filter($event.target.value)" [autofocus]="true" />
+                                    </ng-template>
+                                </ng-select>
+                            </ion-col>
+                            <!-- Borrower Group-->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <ion-label position="floating"> Borrower Group </ion-label>
+                                <ion-label  tooltip="Add Borrower Group" flow="up" delay="500" (click)="presentModal('lender_group_add', 'group', lenderGroupList, 'Add', 'Group (Borrower)', '')" class="add-button" [hidden]="selectLoading || model.bgroup_id">
+                                    <!-- (indentife, url, array, arrayname, type, displayName, id) -->
+                                    <ion-icon name="add"></ion-icon>
+                                    Add 
+                                </ion-label>
+                                <ion-label  tooltip="Edit Borrower Group" flow="up" delay="500" (click)="presentModal('lender_group_add', 'group', lenderGroupList, 'Edit', 'Group (Borrower)', model.bgroup_id)" class="add-button" [hidden]=" !model.bgroup_id">
+                                    <!-- (indentife, url, array, type, displayName, id) -->
+                                    <ion-icon name="add"></ion-icon>
+                                    Edit 
+                                </ion-label>
+                                <ng-select #bgroupSerch
+                                    [loading]="selectLoading"
+                                    [dropdownPosition]="'bottom'"
+                                    placeholder="Please Select Borrower Group"
+                                    [items]="lenderGroupList"
+                                    bindLabel="name"
+                                    name="bgroup_id"
+                                    bindValue="id"
+                                    (change)="OnChangeSelectLender(model.bgroup_id, 'browerGroup')"
+                                    [searchable]="false"
+                                    [(ngModel)]="model.bgroup_id">
+                                    <ng-template ng-header-tmp>
+                                        <input placeholder="Search" class="dropdown-custom-search" type="text" (input)="bgroupSerch.filter($event.target.value)" [autofocus]="true" />
+                                    </ng-template>
+                                </ng-select>
+                            </ion-col>
+                            <!-- Borrower-->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3" [ngClass]="{'show-disable': !model.bgroup_id}">
+                                <ion-label position="floating"> Borrower <sup>*</sup></ion-label>
+
+                                <ion-label  tooltip="Add Borrower" flow="up" delay="500" (click)="presentModal('lender_single_add', 'client', borrowerList, 'Add', 'Client (Borrower)', '')" class="add-button" [hidden]="selectLoading || model.brrower_id">
+                                    <!-- (indentife, url, array, type, displayName, id) -->
+                                    <ion-icon name="add"></ion-icon>
+                                    Add 
+                                </ion-label>
+                                <ion-label  tooltip="Edit Borrower" flow="up" delay="500" (click)="presentModal('lender_single_add', 'client', borrowerList, 'Edit', 'Client (Borrower)', model.brrower_id)" class="add-button" [hidden]=" !model.brrower_id">
+                                    <!-- (indentife, url, array, type, displayName, id) -->
+                                    <ion-icon name="add"></ion-icon>
+                                    Edit 
+                                </ion-label>
+                                <ng-select #borrowerSerch
+                                    [loading]="selectLoading"
+                                    [dropdownPosition]="'bottom'"
+                                    placeholder="Please Select Borrower"
+                                    [items]="borrowerList"
+                                    bindLabel="name"
+                                    name="brrower_id"
+                                    bindValue="id"
+                                    (change)="onChangeSingleLender(model.brrower_id,  borrowerList, 'borrower_select')"
+                                    [searchable]="false"
+                                    [(ngModel)]="model.brrower_id"
+                                    required>
+                                    <ng-template ng-header-tmp>
+                                        <input placeholder="Search" class="dropdown-custom-search" type="text" (input)="borrowerSerch.filter($event.target.value)" [autofocus]="true"/>
+                                    </ng-template>
+                                </ng-select>
+                            </ion-col>
+                            <!-- Principle -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <div>
+                                    <ion-label position="floating">Principle<sup>*</sup></ion-label>
+                                    <ion-input OnlyNumber="true" name="principle" [(ngModel)]="model.principle" required clearInput ></ion-input>
+                                </div>
+                            </ion-col>
+                           <!-- Interest Rate -->
+                           <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <div>
+                                    <ion-label position="floating">Monthly Interest Rate<sup>*</sup>  (%)</ion-label>
+                                    <ion-input OnlyNumber="true" name="interest_rate" [(ngModel)]="model.interest_rate" required clearInput ></ion-input>
+                                </div>
+                            </ion-col>
+
+                            <!--Start datepicker -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <div>
+                                    <ion-label position="floating">Due Date<sup>*</sup></ion-label>
+
+                                    <!-- <ion-input class="date-picker" 
+                                    readonly 
+                                    name="start_date"
+                                    [(ngModel)]="model.start_date" 
+                                    [liIonic4Datepicker]="startdatePickerObj" 
+                                    (ngModelChange)="onDateChangeStartDate(model.start_date)"
+                                    required>
+                                    </ion-input> -->
+
+                                    <li-ionic4-datepicker 
+                                        name="start_date" 
+                                        [(ngModel)]="model.start_date"
+                                        [inputDateConfig]="startdatePickerObj" 
+                                        (ngModelChange)="onDateChangeStartDate(model.start_date)"
+                                        required
+                                    ></li-ionic4-datepicker>
+                                    
+                                </div>
+                            </ion-col>
+                            
+                            <!-- Interest Cycle -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <div>
+                                    <ion-label>Interest Cycle<sup>*</sup></ion-label>
+                                    <ion-list>
+                                        <div class="radio-item">
+                                            <input type="radio" id="ritema" value="1" name="interest_cycle" [(ngModel)]="interest_cycle" (ngModelChange)="radioButtonChange(interest_cycle)">
+                                            <label for="ritema">Days</label>
+                                        </div>
+                                        
+                                        <div class="radio-item">
+                                            <input type="radio" id="ritemb" value="2" name="interest_cycle" [(ngModel)]="interest_cycle" (ngModelChange)="radioButtonChange(interest_cycle)">
+                                            <label for="ritemb">Month</label>
+                                        </div>
+                                    </ion-list>
+                                </div>
+                            </ion-col>
+                            <!-- Days -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3" [ngSwitch]="interest_cycle">
+                                <div *ngSwitchCase="'1'">
+                                    <ion-label position="floating">Cycle Days</ion-label>
+                                    <ion-input OnlyNumber="true" name="cycle_days" [(ngModel)]="model.cycle_days" clearInput required (ngModelChange)="dueDateAutoCalculate(model.cycle_days, model.start_date)"  (ionmmmChange)="dueDateAutoCalculate(model.cycle_days, model.start_date)" ></ion-input>
+                                </div>
+                                <div *ngSwitchCase="'2'">
+                                    <ion-label position="floating">Cycle Months</ion-label>
+                                    <ng-select #cmonthSerch
+                                        [dropdownPosition]="'bottom'"
+                                        placeholder="Please Select Months" 
+                                        [items]="monthList"
+                                        bindLabel="name"
+                                        name="cycle_month"
+                                        bindValue="id"
+                                        (change)="dueMonthAutoCalculate(model.cycle_month, model.start_date)"
+                                        [searchable]="false"
+                                        [(ngModel)]="model.cycle_month"
+                                        required>
+                                        <ng-template ng-header-tmp>
+                                            <input placeholder="Search" style="width: 100%; line-height: 24px" type="text" (input)="cmonthSerch.filter($event.target.value)" [autofocus]="true" />
+                                        </ng-template>
+                                    </ng-select>
+                                </div>
+                            </ion-col>
+                            
+                            <!--due datepicker -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <div class="Only-view-fields due_date">
+                                    <ion-label position="floating">Next Due Date<sup>*</sup></ion-label>
+
+                                    <!-- <ion-input class="date-picker" 
+                                    readonly 
+                                    name="end_date"
+                                    [(ngModel)]="model.end_date"
+                                    [liIonic4Datepicker]="endDatePickerObj" 
+                                    (ngModelChange)="myFunction()"
+                                    required>
+                                    </ion-input> -->
+
+                                    <li-ionic4-datepicker 
+                                        name="end_date" 
+                                        [(ngModel)]="model.end_date"
+                                        [inputDateConfig]="endDatePickerObj" 
+                                        (ngModelChange)="onDateChangeEndDate(model.cycle_days, model.end_date)"
+                                        required
+                                    ></li-ionic4-datepicker>
+
+                                </div>
+                            </ion-col>
+                            <!--No of days -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <div >
+                                    <ion-label position="floating">Interest Days</ion-label>
+                                    <ion-input OnlyNumber="true" name="no_of_days" [(ngModel)]="model.no_of_days" clearInput (ngModelChange)="onChangeNoOfDay(model.no_of_days)" ></ion-input>
+                                </div>
+                            </ion-col>
+                            <!--Principle Return Date -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <div>
+                                    <ion-label position="floating">Principle Return Date</ion-label>
+                                    <!-- prncpl_rtrn_dt -->
+
+                                    <!-- <ion-input class="date-picker" 
+                                    readonly 
+                                    name="pri_receive_date"
+                                    [(ngModel)]="model.pri_receive_date" 
+                                    [liIonic4Datepicker]="datePickerObj" 
+                                    (ngModelChange)="onDateChangePriDate(model.pri_receive_date)">
+                                    </ion-input> -->
+
+                                    <li-ionic4-datepicker 
+                                        name="prncpl_rtrn_dt" 
+                                        [(ngModel)]="model.prncpl_rtrn_dt"
+                                        [inputDateConfig]="principleReturnDatePickerObj" 
+                                        (ngModelChange)="myFunction()"
+                                        required
+                                    ></li-ionic4-datepicker>
+                                    <!-- <ion-icon class="datepicker_calender_icon" name="calendar"></ion-icon> -->
+
+                                </div>
+                            </ion-col>
+
+                            <!-- date time picker -->
+                            <!-- <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <div>
+                                    <ion-label position="floating">Principle Return Date</ion-label>
+                                    <div class="date-time-picker-wrapper">
+                                        <input [(ngModel)]="model.prncpl_rtrn_dt" name="date_time"
+                                            [owlDateTimeTrigger]="dt11" [owlDateTime]="dt11"
+                                            #dateTime="ngModel" >
+                                        <span class="close" [hidden]="!model.date_time">
+                                            <ion-icon name="close-circle"></ion-icon>
+                                        </span>
+                                        <span class="trigger" [owlDateTimeTrigger]="dt11">
+                                            <ion-icon name="calendar"></ion-icon>
+                                        </span>
+                                        <owl-date-time [pickerMode]="'dialog'" #dt11></owl-date-time>
+        
+                                        hidden
+                                        <input type="hidden" [(ngModel)]="dateTimeFormatChangeValue" name="date_time">
+                                    </div>
+                                </div>
+                            </ion-col> -->
+
+                            <!--Brokerage-->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                <div>
+                                    <ion-label position="floating">Monthly Brokerage Rate<sup>*</sup>  (%)</ion-label>
+                                    <ion-input OnlyNumber="true" name="brokerage" [(ngModel)]="model.brokerage" clearInput required ></ion-input>
+                                </div>
+                            </ion-col>
+
+                            <!--Interest TDS-->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3" *ngIf="showTdsField || (parms_action_name == 'renew' && model.tdss)">
+                                <div>
+                                    <ion-label position="floating">Interest TDS<sup>*</sup> (%)</ion-label>
+                                    <ion-input class="Only-view-fields" OnlyNumber="true" name="interest_tds" [(ngModel)]="interest_tds" clearInput required ></ion-input>
+                                </div>
+                            </ion-col>
+
+                            <!--Brokerage TDS-->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3" *ngIf="showBrokerageTdsField || (parms_action_name == 'renew' && model.brokerage_tds)">
+                                <div>
+                                    <ion-label position="floating">Brokerage TDS<sup>*</sup> (%)</ion-label>
+                                    <ion-input class="Only-view-fields" OnlyNumber="true" name="brokerage_tds" [(ngModel)]="brokerage_tds" clearInput required ></ion-input>
+                                </div>
+                            </ion-col>
+
+                            <!--transaction status-->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3" *ngIf="parms_action_name == 'edit' || parms_action_name == 'renew'">
+                                <input type="hidden"  name="transaction_status" [(ngModel)]="model.transaction_status">
+                                <!-- <div>
+                                    <ion-label position="floating">Transaction Status<sup>*</sup></ion-label>
+                                    <ng-select #transctionStatusSerch
+                                    [loading]="selectLoading"
+                                    [dropdownPosition]="'bottom'"
+                                    placeholder="Please Select Transaction Status"
+                                    [items]="transactionStatus"
+                                    bindLabel="name"
+                                    name="transaction_status"
+                                    bindValue="id"
+                                    [searchable]="false"
+                                    [(ngModel)]="model.transaction_status">
+                                    <ng-template ng-header-tmp>
+                                        <input placeholder="Search" class="dropdown-custom-search" type="text" (input)="transctionStatusSerch.filter($event.target.value)" [autofocus]="true" [autofocus]="true" />
+                                    </ng-template>
+                                </ng-select>
+                                </div> -->
+                            </ion-col>
+                            <!--brokerage_status-->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3" *ngIf="parms_action_name == 'edit' || parms_action_name == 'renew'">
+                                <input type="hidden"  name="brokerage_status" [(ngModel)]="model.brokerage_status">
+                                <!-- <div>
+                                    <ion-label position="floating">Brokerage Status<sup>*</sup></ion-label>
+                                    <ng-select #transctionBStatusSerch
+                                    [loading]="selectLoading"
+                                    [dropdownPosition]="'bottom'"
+                                    placeholder="Please Select Brokerage Status"
+                                    [items]="transactionStatus"
+                                    bindLabel="name"
+                                    name="brokerage_status"
+                                    bindValue="id"
+                                    [searchable]="false"
+                                    [(ngModel)]="model.brokerage_status">
+                                    <ng-template ng-header-tmp>
+                                        <input placeholder="Search" class="dropdown-custom-search" type="text" (input)="transctionBStatusSerch.filter($event.target.value)" [autofocus]="true" [autofocus]="true" />
+                                    </ng-template>
+                                </ng-select>
+                                </div> -->
+                            </ion-col>
+                        </ion-row>
+                        <!-- file upoload -->
+                        <ion-row class="file-upload">
+                            <ion-col size-xs="12" size-sm="12" size-md="12"  size-lg="12">
+                                <div class="file-uploading" (click)="fileInput.click()" appDragDrop (onFileDropped)="uploadFile('multi', $event)">
+                                    <div>
+                                        <input hidden type="file" #fileInput (change)="uploadFile('multi', $event.target.files)" multiple>
+                                    </div>
+                                </div>
+                                <!-- files : {{files | json}} -->
+                            </ion-col>
+                        </ion-row>
+                        <!-- upload file show start -->
+                        <ion-row>
+                            <ion-col size-xs="12" size-sm="12" size-md="12"  size-lg="12">
+                                <div style="overflow-x:auto;" class="uploading-info">
+                                    <table>
+                                        <thead *ngIf="files.length > 0">
+                                            <tr>
+                                                <th style="padding-left: 3px;">
+                                                    <span>
+                                                        <ion-icon style="zoom:2.0;" name="information"></ion-icon>
+                                                    </span>
+                                                </th>
+                                                <!-- table header -->
+                                                <th>
+                                                    <span>Extension</span>
+                                                </th>
+                                                <th>
+                                                    <span>File Name</span>
+                                                </th>
+                                                <th>
+                                                    <span>File Size</span>
+                                                </th>
+                                                <th>
+                                                    <span>Action</span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let file of files;let i= index">
+                                                <td>
+                                                    <!--id-->
+                                                    <input type="hidden" name="file[{{i}}][id]" [(ngModel)]="file.file_id">
+
+                                                    <!--temp_id-->
+                                                    <input type="hidden" name="file[{{i}}][temp_id]" [(ngModel)]="file.file_id">
+
+                                                    <!--drag and drop file name-->
+                                                    <input  type="hidden" name="file[{{i}}][file_name]" [(ngModel)]="file.file_name">
+
+                                                    <span>{{i + 1}}</span>
+                                                </td>
+                                                <td>
+                                                    <span>{{ file.file_extension }}</span>
+                                                </td>
+                                                <td>
+                                                    <input class="file-name"  type="text" name="file[{{i}}][file_name]" [(ngModel)]="file.file_name">
+                                                    <ion-icon name="create"></ion-icon>
+                                                    <a style="position: relative; top:3px; left:-2px;" href="{{main_url}}/{{file.file_path}}" target="_blank">
+                                                        <ion-icon name="eye"></ion-icon>
+                                                    </a>
+                                                    <!-- <ion-icon tooltip="View" flow="up" delay="500" name="eye"  class="file-preview-show" (click)="uploadFilePreview('file_preview', file, files)" ></ion-icon> -->
+                                                </td>
+                                                <td>
+                                                    <span>{{ file.file_size |  fileSizeConvert }}</span>
+                                                </td>
+                                                <td>
+                                                    <!-- delete button -->
+                                                    <ion-button  tooltip="Delete File" flow="up" delay="500" (click)="deleteAlertConfirm(files, i)" color="danger" size="small">
+                                                        <ion-icon ios="ios-trash" md="md-trash"></ion-icon>
+                                                    </ion-button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="100" class="progress-bar">
+                                                    <div class="progress-outer" *ngIf="uploadResponseProgress > 0 && onlyFileProgress" >
+                                                        <div class="progress-inner" [style.width.%]="uploadResponseProgress">{{uploadResponseProgress}} % </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+                        <!-- upload file show end -->
+
+                        <!-- -------- pdc form start ----------- -->
+                        <ion-row>
+                            <div class="detail-information">
+                                <ion-col>
+                                    <ion-label >
+                                        <span>Add detailed information releated to PDC   </span>
+                                        <span (click)="toggleShow = !toggleShow" class="click-here">
+                                            {{!toggleShow ? 'Hide' : 'click here' }}
+                                        </span>
+                                    </ion-label>
+                                </ion-col>
+                                <ion-grid class="detail-information-pdc" [hidden]="toggleShow">
+                                    <ion-row *ngFor="let item of model.pages; let i = index;  let first = first; let last = last;  let odd = odd" [ngClass]="{ 'odd-pdc-row': odd}">
+                                        <!--(+ -) button start -->
+                                        <ion-col size-xs="12" size-sm="12" size-md="12"  size-lg="12" class="button-add-remove-wrapper">
+                                            <span class="title">PDC information {{i + 1}}</span>
+                                            <!-- minus Button -->
+                                            <div class="button-add-remove">
+                                                <div class="add-address-btn remove" [hidden]="first">
+                                                    <ion-button color="danger" size="small" (click)="removeItem(i, $event, model.pages, '', '');">
+                                                        <ion-ripple-effect></ion-ripple-effect>
+                                                        <ion-icon ios="ios-remove" md="md-remove"></ion-icon>
+                                                    </ion-button>
+                                                </div>
+                                            </div>
+                                            <!-- Plus Button -->
+                                            <div class="button-add-remove" *ngIf="first || last">
+                                                <div class="add-address-btn">
+                                                    <ion-button color="warning" size="small" (click)="addItem(model.pages, item)">
+                                                        <!-- <ion-ripple-effect></ion-ripple-effect> -->
+                                                        <ion-icon ios="ios-add" md="md-add"></ion-icon>
+                                                    </ion-button>
+                                                </div>
+                                            </div>
+                                        </ion-col>
+                                        <!-- (+ -) button end -->
+                                        
+                                        <ion-col size-xs="12" size-sm="12" size-md="12"  size-lg="12" style="border: 1px solid #f2f2f2; margin-bottom:10px;">
+                                                <ion-row>
+                                                <!-- Bank Acc -->
+                                                <!-- <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                    <div>
+                                                    <ion-label position="floating">Bank Account</ion-label>
+                                                    <ion-input  OnlyNumber="true" type="tel" minlength="11" maxlength="16" name="bank_acc" [(ngModel)]="model.bank_acc" clearInput ></ion-input>
+                                                    </div>
+                                                </ion-col> -->
+                                                <!-- Routing -->
+                                                <!-- <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                    <div>
+                                                        <ion-label position="floating">Routing</ion-label>
+                                                        <ion-input name="routing" [(ngModel)]="model.routing" clearInput ></ion-input>
+                                                    </div>
+                                                </ion-col> -->
+                                                <!-- Bank Name -->
+                                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                    <div>
+                                                    <ion-label position="floating">Bank Name <sup *ngIf="pdcRequired">*</sup></ion-label>
+                                                    <ion-input name="transaction[{{i}}][bank_name]" [(ngModel)]="item.bank_name" (ngModelChange)="onFillPdc(item.bank_name)" [required]="pdcRequired" clearInput ></ion-input>
+                                                    </div>
+                                                </ion-col>
+                                                <!-- Branch Name -->
+                                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                    <div>
+                                                    <ion-label position="floating">Branch Name<sup *ngIf="pdcRequired">*</sup></ion-label>
+                                                    <ion-input name="transaction[{{i}}][branch_name]" [(ngModel)]="item.branch_name" (ngModelChange)="onFillPdc(item.branch_name)" [required]="pdcRequired" clearInput ></ion-input>
+                                                    </div>
+                                                </ion-col>
+                                                <!-- Docket -->
+                                                <!-- <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                    <div>
+                                                    <ion-label position="floating">Docket</ion-label>
+                                                    <ion-input name="docket" [(ngModel)]="model.docket" clearInput ></ion-input>
+                                                    </div>
+                                                </ion-col> -->
+                                                <!-- cheque No -->
+                                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                    <div>
+                                                    <ion-label position="floating">Cheque No<sup *ngIf="pdcRequired">*</sup></ion-label>
+                                                    <ion-input name="transaction[{{i}}][cheque_no]" [(ngModel)]="item.cheque_no" (ngModelChange)="onFillPdc(item.cheque_no)" [required]="pdcRequired" clearInput ></ion-input>
+                                                    </div>
+                                                </ion-col>
+                                                <!-- cheque Dt -->
+                                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                    <div>
+                                                    <ion-label position="floating">Cheque Date<sup *ngIf="pdcRequired">*</sup></ion-label>
+                                                    </div>
+                                                    
+                                                    <!-- <ion-input class="date-picker" readonly 
+                                                        name="check_date"
+                                                        [(ngModel)]="model.check_date" required
+                                                        [liIonic4Datepicker]="datePickerObj" 
+                                                        (ngModelChange)="myFunction()">
+                                                    </ion-input> -->
+
+                                                    <li-ionic4-datepicker 
+                                                        name="transaction[{{i}}][check_date]" 
+                                                        [(ngModel)]="item.check_date"
+                                                        [inputDateConfig]="datePickerObj" 
+                                                        (ngModelChange)="onFillPdc(item.check_date)"
+                                                        [required]="pdcRequired"
+                                                    ></li-ionic4-datepicker>
+
+                                                </ion-col>
+                                                <!-- cheque Amt -->
+                                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                                    <div>
+                                                    <ion-label position="floating">Cheque Amount<sup *ngIf="pdcRequired">*</sup></ion-label>
+                                                    <ion-input OnlyNumber="true" name="transaction[{{i}}][check_amt]" [(ngModel)]="item.check_amt" (ngModelChange)="onFillPdc(item.check_amt)" [required]="pdcRequired" clearInput ></ion-input>
+                                                    </div>
+                                                </ion-col>
+                                                
+                                                <!-- Comments -->
+                                                <ion-col size-xs="12" size-sm="6" size-md="8"  size-lg="5">
+                                                    <div>
+                                                    <ion-label position="floating">Comments</ion-label>
+                                                    <ion-input name="transaction[{{i}}][comment]" [(ngModel)]="item.comment"  clearInput ></ion-input>
+                                                    </div>
+                                                </ion-col>
+                                                <!-- pdc file upload -->
+                                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="file-upload">
+                                                    <div class="file-uploading" appDragDrop (onFileDropped)="pdcUploadFile('multi', $event, model.pages, item)">
+                                                        <div>
+                                                            <input type="file" #fileInputPdc (change)="pdcUploadFile('multi', $event.target.files, model.pages, item)" multiple>
+                                                        </div>
+                                                    </div>
+                                                    <!-- file_model_pdc : {{item?.file_model_pdc | json}} -->
+                                                </ion-col>
+
+                                                <!-- upload file show start -->
+                                                <ion-col size-xs="12" size-sm="12" size-md="12"  size-lg="12">
+                                                    <div style="overflow-x:auto;" class="uploading-info">
+                                                        <table *ngIf="item?.file_model_pdc">
+                                                            <thead *ngIf="item?.file_model_pdc?.length > 0">
+                                                                <tr>
+                                                                    <th style="padding-left: 3px;">
+                                                                        <span>
+                                                                            <ion-icon style="zoom:2.0;" name="information"></ion-icon>
+                                                                        </span>
+                                                                    </th>
+                                                                    <!-- table header -->
+                                                                    <th>
+                                                                        <span>Extension</span>
+                                                                    </th>
+                                                                    <th>
+                                                                        <span>File Name</span>
+                                                                    </th>
+                                                                    <th>
+                                                                        <span>File Size</span>
+                                                                    </th>
+                                                                    <th>
+                                                                        <span>Action</span>
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr *ngFor="let filepdc of item?.file_model_pdc;let ind= index">
+                                                                    <td>
+                                                                        <div *ngIf="filepdc.file_id">
+                                                                            <!--id hidden -->
+                                                                            <input type="hidden" name="transaction[{{i}}][pdcfile][{{ind}}][id]" [(ngModel)]="filepdc.file_id">
+                        
+                                                                            <!--temp_id-->
+                                                                            <input type="hidden" name="transaction[{{i}}][pdcfile][{{ind}}][temp_id]" [(ngModel)]="filepdc.file_id">
+                                                                        </div>
+                                                                        <div *ngIf="!filepdc.file_id">
+                                                                            <!--id hidden -->
+                                                                            <input type="hidden" name="transaction[{{i}}][pdcfile][{{ind}}][id]" [(ngModel)]="filepdc.id">
+                        
+                                                                            <!--temp_id-->
+                                                                            <input type="hidden" name="transaction[{{i}}][pdcfile][{{ind}}][temp_id]" [(ngModel)]="filepdc.id">
+                                                                        </div>
+                                                                        
+                    
+                                                                        <!--drag and drop file name-->
+                                                                        <input  type="hidden" name="transaction[{{i}}][pdcfile][{{ind}}][file_name]" [(ngModel)]="filepdc.file_name">
+                    
+                                                                        <span>{{ind + 1}}</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <span>{{ filepdc.file_extension }}</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="file-name"  type="text" name="transaction[{{i}}][pdcfile][{{ind}}][file_name]" [(ngModel)]="filepdc.file_name">
+                                                                        <ion-icon name="create"></ion-icon>
+                                                                        <a style="position: relative; top:3px; left:-2px;" href="{{main_url}}/{{filepdc.file_path}}" target="_blank">
+                                                                            <ion-icon name="eye"></ion-icon>
+                                                                        </a>
+                                                                    </td>
+                                                                    <td>
+                                                                        <span>{{ filepdc.file_size |  fileSizeConvert }}</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <!-- delete button -->
+                                                                        <ion-button (click)="deleteAlertConfirm(item?.file_model_pdc, ind)" color="danger" size="small"
+                                                                        tooltip="Delete" flow="up">
+                                                                            <ion-icon ios="ios-trash" md="md-trash"></ion-icon>
+                                                                        </ion-button>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colspan="100" class="progress-bar" *ngIf="item?.uploadResponseProgressItem">
+                                                                        <div class="progress-outer" >
+                                                                            <div class="progress-inner" [style.width.%]="item?.uploadResponseProgressItem">{{item?.uploadResponseProgressItem}} % </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </ion-col>
+                                                <!-- upload file show end -->
+                                            </ion-row>
+                                        </ion-col>
+                                    </ion-row>
+                                
+                                </ion-grid>
+                            </div>
+                        </ion-row>
+                        <!-- pdc form end -->
+
+                    </ion-grid>
+                </div>
+                <div class="form-button-section">
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col class="ion-text-center" size-xs="12" size-sm="12" size-md="12"  size-lg="12">
+                                <ion-button color="danger" size="default" tooltip="Reload" (click)="reloadPageAlert()">
+                                    Reload
+                                </ion-button>
+                                <ion-button (click)="clickButtonType('Save')" color="secondary" size="default"
+                                type="submit" [disabled]="!addForm.valid || uploadResponseProgress" 
+                                color="secondary" tooltip="Save" flow="up">
+                                    <ion-spinner *ngIf="form_submit_text_save == 'Submitting'" name="crescent"></ion-spinner> 
+                                    <span class="submitText">{{form_submit_text_save}}</span>
+                                </ion-button>
+                                <ion-button (click)="clickButtonType('Save-add-another')" color="secondary" size="default"
+                                    type="submit" [disabled]="!addForm.valid || uploadResponseProgress" 
+                                    color="secondary" tooltip="Save & Add Another" flow="up">
+                                    <ion-spinner *ngIf="form_submit_text_save_another == 'Submitting'" name="crescent"></ion-spinner> 
+                                    <span class="submitText">
+                                        <span class="submitText">{{form_submit_text_save_another}}</span>
+                                    </span>
+                                </ion-button>
+                                <ion-button size="default" fill="clear" color="danger" tooltip="Cancel" flow="up" [routerLink]="['/', 'transaction-list']">
+                                    <ion-icon name="close"></ion-icon>
+                                    Cancel
+                                </ion-button>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </div>
+            </form>
+        </div>
+    </div>
+</ion-content>
+
+<!-- common footer show -->
+<common-footer></common-footer>
+
+
+<!-- <ion-input type="file" formControlName="avatar"></ion-input>
+<button type="button" ion-button (click)="selectFile()"></button>
+selectFile() {
+    let element: HTMLElement = document.querySelector('input[type="file"]') as HTMLElement;
+    element.click();
+}
+changeLabelName(lbl, val) {
+    document.getElementById(lbl).innerHTML = val;
+  }   -->

@@ -1,0 +1,652 @@
+<!-- common header show -->
+<common-header></common-header>
+
+<ion-content class="page-wrapper transaction-details-view">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <div class="page-inner">
+          <ion-row class="width-100 nomargin" style="padding-bottom:30px">
+              <ion-col size-xs="7" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+                  <div class = "profile-pic-section sub-header-color pull-left width-100 font-size-18">
+                      <img src="../../../../assets/images/avatar.jpg" alt="image">
+                  </div>
+              </ion-col>
+              <ion-col size-xs="5" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+                  <div class = "action-section sub-header-color width-100 text-right">
+                      <ion-button tooltip="Edit" flow="left" delay="500" >
+                        <ion-icon name="create"></ion-icon> 
+                      </ion-button>
+                  </div>
+              </ion-col>
+          </ion-row>
+          <ion-grid>
+            <ion-row class="first-table">
+              <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="left-box">
+                <div class="view-element">
+                  <ion-icon name="menu" style="color: var(--ion-color-lighter)"></ion-icon> 
+                  <span>Tickets </span>
+                </div>
+                <div class=" view-element">
+                  <ion-icon style="color: var(--ion-color-secondary)" name="chatbubbles"></ion-icon>
+                  <span>Chats</span>
+                </div>
+                <div class=" view-element">
+                  <ion-icon name="mail" style="color: var(--ion-color-warning)"></ion-icon>
+                  <span>Emails</span>
+                </div>
+                <div class="view-element">
+                  <ion-icon name="warning" style="color: var(--ion-color-danger-thin)"></ion-icon>
+                  <span>Complaints</span>
+                </div>
+                <div class=" view-element">
+                  <ion-icon name="calendar" style="color: var(--ion-color-danger-thin)"></ion-icon> 
+                  <span>Schedules</span>
+                </div>
+              </ion-col>
+              <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="middle-box">
+                  <div class=" view-element">
+                    <ion-icon name="call" style="color: var(--ion-color-medium-tint)"></ion-icon> 
+                    <span>No Data Found</span>
+                    <span style="position: absolute;right: 40px;">office</span>
+                    <ion-icon name="checkbox" class="pull-right" style="color: var(--ion-color-success)"></ion-icon>
+                  </div>
+                  <div class=" view-element">
+                    <ion-icon name="mail" style="color: var(--ion-color-medium-tint)"></ion-icon> 
+                    <span>No Data Found</span>
+                    <span style="position: absolute;right: 40px;">office</span>
+                    <ion-icon name="checkbox" class="pull-right" style="color: var(--ion-color-success)"></ion-icon>
+                  </div>
+                  <div class=" view-element">
+                    <ion-icon name="pin" style="color: var(--ion-color-medium-tint)"></ion-icon> 
+                    <span>No Data Found</span>
+                    <span style="position: absolute;right: 40px;">office</span>
+                    <ion-icon name="mail" class="pull-right" style="color: var(--ion-color-secondary)"></ion-icon>
+                  </div>
+                  <div class=" view-element">
+                    <ion-icon name="globe" style="color: var(--ion-color-medium-tint)"></ion-icon> 
+                  </div>
+              </ion-col>
+              <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4" class="right-box">
+                  <div class=" view-element">
+                    <ion-icon name="calendar"></ion-icon> 
+                    <span>No Data Found</span>
+                  </div>
+                  <div class=" view-element">
+                      <i style="color: var(--ion-color-warning)" class="material-icons">cake</i> 
+                    <span>No Data Found</span>
+                  </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-grid>
+    <ion-row>
+      <ion-col size-xs="12" size-sm="6" size-md="8"  size-lg="8">
+        <div class="page-inner">
+          <div class="heading">
+            <span>Open Ticket</span>
+          </div>
+          
+          <div class="table-outer" style="overflow-x:auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="padding-left: 3px;">
+                    <span>
+                        <ion-icon style="zoom:2.0;" name="information"></ion-icon>
+                    </span>
+                  </th>
+                  <th>
+                    <div class="ion-checkbox" [hidden]="isListLoading">
+                      <ion-checkbox slot="end" name="select_all_item" [(ngModel)]="allselectModel" (ionChange)="allSelectItem($event)" ></ion-checkbox>
+                    </div>
+                  </th> 
+                  <!-- table header -->
+                  <th *ngFor="let th of tableHeaderData " [hidden]="th.is_default == 0 || isListLoading" (click)="th.is_sortable == 1 && isSortTableHeader(tableHeaderData, th)">
+                    <span>{{th.display_name}}</span>
+                    <!-- sorting header -->
+                    <span *ngIf="th.is_sortable == 1">
+                      <span class="asc-sort" [hidden]="th.sortingButtonName == 'desc'" [ngClass]="{'active': th.sortingButtonName == 'asc'}">
+                        <ion-icon name="arrow-dropup"></ion-icon>
+                      </span>
+                      <span class="desc-sort" [hidden]="th.sortingButtonName == 'asc'" [ngClass]="{'active': th.sortingButtonName == 'desc'}">
+                        <ion-icon name="arrow-dropdown"></ion-icon>
+                      </span>
+                    </span>
+                  </th>
+                  <th>
+                    <span>Action</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of fetchItems; let i = index" [hidden]="isListLoading">
+                    <td data-title="ID">
+                      <!-- <span>{{i + 1}}</span> -->
+                      <span>{{listAlldata.from + i}}</span>
+                    </td>
+                    <td>         
+                        <ion-checkbox name="checkbox_name" [(ngModel)]="item.isSelected"  slot="end" (ionChange)="onCheckboxSelect(item, $event)" ></ion-checkbox>
+                    </td>
+      
+                    <!-- table data -->
+                    <!-- <td *ngFor="let th of tableHeaderData | filtermulti: [{is_default:1},{is_display:1}]"> -->
+                      <td *ngFor="let th of tableHeaderData " [hidden]="th.is_default == 0" [routerLink]="['/', 'transaction-view', item.id]">
+      
+                        <!-- lender -->
+                        <span *ngIf="th.column_name === 'lender'">
+                          {{ item.lender?.name }} 
+                        </span>
+      
+                        <!-- brrower -->
+                        <span *ngIf="th.column_name === 'brrower'">
+                          {{ item.brrower?.name }} 
+                        </span>
+      
+                        <!-- lgroup -->
+                        <span *ngIf="th.column_name === 'lgroup'">
+                          {{ item.lgroup?.name }} 
+                        </span>
+      
+                        <!-- bgroup -->
+                        <span *ngIf="th.column_name === 'bgroup'">
+                          {{ item.bgroup?.name }} 
+                        </span>
+      
+                        <!-- transaction_status -->
+                        <span *ngIf="th.column_name === 'transaction_status'">
+                          {{ transactionStatuss[item.transaction_status]?.name }} 
+                        </span>
+      
+                        <!--all  common -->
+                        <span *ngIf="th.column_name !== 'lender' && th.column_name !== 'brrower' && th.column_name !== 'lgroup' && th.column_name !== 'bgroup' && th.column_name !== 'transaction_status'"> {{ item[th.column_name] }} </span>
+                    </td>
+      
+                    <td class="action">
+                      <!-- <ion-icon name="create"></ion-icon> -->
+                      <ion-button tooltip="Edit" flow="left" delay="500" [routerLink]="['/', 'add-transaction', 'edit', item.id]" >
+                        <ion-icon name="create"></ion-icon>
+                      </ion-button>
+                      <!-- <ion-button  tooltip="Delete File" flow="left" delay="500" (click)="deleteAlertConfirm(files, i)" color="danger" size="small">
+                          <ion-icon ios="ios-trash" md="md-trash"></ion-icon>
+                      </ion-button> -->
+                    </td>
+                </tr>
+                <tr [hidden]="!isListLoading" class="loading-table-data">
+                  <td colspan="100">
+                    <span style="font-size: 16px;">Data is loading...</span>
+                  </td>
+                </tr>
+                <tr *ngIf="fetchItems?.length == 0 && !isListLoading" class="loading-table-data">
+                  <td colspan="100">
+                      No Data Found
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <ion-row>
+            <ion-col size-xs="12" class="footer pull-left nomargin nopadding width-100">
+            <ul class="left-menu pull-left padding-left-0 margin-top-14">
+              <li (click)="onRefreshPage($event)" >
+                <ion-button class="background-orange" tooltip="Refresh" flow="right" delay="500">
+                    <ion-icon name="refresh"></ion-icon>
+                </ion-button>
+              </li>
+              <!-- <li><ion-button class="background-cyan" tooltip="Export" flow="up" delay="500"><ion-icon name="document"></ion-icon></ion-button></li> -->
+            </ul>
+            </ion-col>
+          </ion-row>
+        </div>
+      </ion-col>
+      <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4">
+        <div class="right-section">
+          <div class="card-part">
+            <div class="date-card">
+                <span class="font-size-13"> {{curentDate | date:'dd MMM yyy'}} <i>|</i> {{curentDate | date:'h:mm a '}}</span>
+            </div>
+            <div class="ticket-card">
+              <span>Total Tickets</span>
+            </div>
+          </div>
+          <div class="notification-pannel">
+            <div class="total-call">
+              <div class="no-of-calls">
+                  <span>4</span>
+              </div>
+              <div class="calls">
+                <span>Total Calls</span>
+              </div>
+            </div>
+            <div class="total-email">
+              <div class="no-of-emails">
+                  <span>6</span>
+              </div>
+              <div class="emails">
+                <span>Total Emails</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-grid>
+    <ion-row>
+      <ion-col size-xs="12" size-sm="6" size-md="8"  size-lg="8">
+        <div class="page-inner">
+          <div class="heading">
+            <span>Memorize Ticket</span>
+          </div>
+          
+          <div class="table-outer" style="overflow-x:auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="padding-left: 3px;">
+                    <span>
+                        <ion-icon style="zoom:2.0;" name="information"></ion-icon>
+                    </span>
+                  </th>
+                  <th>
+                    <div class="ion-checkbox" [hidden]="isListLoading">
+                      <ion-checkbox slot="end" name="select_all_item" [(ngModel)]="allselectModel" (ionChange)="allSelectItem($event)" ></ion-checkbox>
+                    </div>
+                  </th> 
+                  <!-- table header -->
+                  <th *ngFor="let th of tableHeaderData " [hidden]="th.is_default == 0 || isListLoading" (click)="th.is_sortable == 1 && isSortTableHeader(tableHeaderData, th)">
+                    <span>{{th.display_name}}</span>
+                    <!-- sorting header -->
+                    <span *ngIf="th.is_sortable == 1">
+                      <span class="asc-sort" [hidden]="th.sortingButtonName == 'desc'" [ngClass]="{'active': th.sortingButtonName == 'asc'}">
+                        <ion-icon name="arrow-dropup"></ion-icon>
+                      </span>
+                      <span class="desc-sort" [hidden]="th.sortingButtonName == 'asc'" [ngClass]="{'active': th.sortingButtonName == 'desc'}">
+                        <ion-icon name="arrow-dropdown"></ion-icon>
+                      </span>
+                    </span>
+                  </th>
+                  <th>
+                    <span>Action</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of fetchItems; let i = index" [hidden]="isListLoading">
+                    <td data-title="ID">
+                      <!-- <span>{{i + 1}}</span> -->
+                      <span>{{listAlldata.from + i}}</span>
+                    </td>
+                    <td>         
+                        <ion-checkbox name="checkbox_name" [(ngModel)]="item.isSelected"  slot="end" (ionChange)="onCheckboxSelect(item, $event)" ></ion-checkbox>
+                    </td>
+      
+                    <!-- table data -->
+                    <!-- <td *ngFor="let th of tableHeaderData | filtermulti: [{is_default:1},{is_display:1}]"> -->
+                      <td *ngFor="let th of tableHeaderData " [hidden]="th.is_default == 0" [routerLink]="['/', 'transaction-view', item.id]">
+      
+                        <!-- lender -->
+                        <span *ngIf="th.column_name === 'lender'">
+                          {{ item.lender?.name }} 
+                        </span>
+      
+                        <!-- brrower -->
+                        <span *ngIf="th.column_name === 'brrower'">
+                          {{ item.brrower?.name }} 
+                        </span>
+      
+                        <!-- lgroup -->
+                        <span *ngIf="th.column_name === 'lgroup'">
+                          {{ item.lgroup?.name }} 
+                        </span>
+      
+                        <!-- bgroup -->
+                        <span *ngIf="th.column_name === 'bgroup'">
+                          {{ item.bgroup?.name }} 
+                        </span>
+      
+                        <!-- transaction_status -->
+                        <span *ngIf="th.column_name === 'transaction_status'">
+                          {{ transactionStatuss[item.transaction_status]?.name }} 
+                        </span>
+      
+                        <!--all  common -->
+                        <span *ngIf="th.column_name !== 'lender' && th.column_name !== 'brrower' && th.column_name !== 'lgroup' && th.column_name !== 'bgroup' && th.column_name !== 'transaction_status'"> {{ item[th.column_name] }} </span>
+                    </td>
+      
+                    <td class="action">
+                      <!-- <ion-icon name="create"></ion-icon> -->
+                      <ion-button tooltip="Edit" flow="left" delay="500" [routerLink]="['/', 'add-transaction', 'edit', item.id]" >
+                        <ion-icon name="create"></ion-icon>
+                      </ion-button>
+                      <!-- <ion-button  tooltip="Delete File" flow="left" delay="500" (click)="deleteAlertConfirm(files, i)" color="danger" size="small">
+                          <ion-icon ios="ios-trash" md="md-trash"></ion-icon>
+                      </ion-button> -->
+                    </td>
+                </tr>
+                <tr [hidden]="!isListLoading" class="loading-table-data">
+                  <td colspan="100">
+                    <span style="font-size: 16px;">Data is loading...</span>
+                  </td>
+                </tr>
+                <tr *ngIf="fetchItems?.length == 0 && !isListLoading" class="loading-table-data">
+                  <td colspan="100">
+                      No Data Found
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <ion-row>
+            <ion-col size-xs="12" class="footer pull-left nomargin nopadding width-100">
+              <ul class="left-menu pull-left padding-left-0 margin-top-14">
+                <li (click)="onRefreshPage($event)" >
+                  <ion-button class="background-orange" tooltip="Refresh" flow="right" delay="500">
+                      <ion-icon name="refresh"></ion-icon>
+                  </ion-button>
+                </li>
+              </ul>
+            </ion-col>
+          </ion-row>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-grid>
+    <ion-row>
+      <ion-col size-xs="12" size-sm="6" size-md="8"  size-lg="8">
+        <div class="company-info page-inner">
+          <mat-accordion>
+            <mat-expansion-panel (opened)="panelOpenState = true"
+                                  (closed)="panelOpenState = false">
+              <mat-expansion-panel-header (click)="toggleMenuOpen = !toggleMenuOpen">
+                <mat-panel-title>
+                    Open Lead [0]
+                </mat-panel-title>
+                <span class="open-close-btn">
+                  <i *ngIf="!toggleMenuOpen" class="down material-icons">keyboard_arrow_down</i>
+                  <i *ngIf="!!toggleMenuOpen" class="up material-icons">keyboard_arrow_up</i>
+                </span>
+              </mat-expansion-panel-header>
+              <div class="company-info-body margin-top-10" style="border: none">
+                <div class="table-outer padding-top-15" style="overflow-x:auto; border-top: 1px solid var(--ion-color-lighter);">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th style="padding-left: 3px;">
+                          <span>
+                              <ion-icon style="zoom:2.0;" name="information"></ion-icon>
+                          </span>
+                        </th>
+                        <th>
+                          <div class="ion-checkbox" [hidden]="isListLoading">
+                            <ion-checkbox slot="end" name="select_all_item" [(ngModel)]="allselectModel" (ionChange)="allSelectItem($event)" ></ion-checkbox>
+                          </div>
+                        </th> 
+                        <!-- table header -->
+                        <th *ngFor="let th of tableHeaderData " [hidden]="th.is_default == 0 || isListLoading" (click)="th.is_sortable == 1 && isSortTableHeader(tableHeaderData, th)">
+                          <span>{{th.display_name}}</span>
+                          <!-- sorting header -->
+                          <span *ngIf="th.is_sortable == 1">
+                            <span class="asc-sort" [hidden]="th.sortingButtonName == 'desc'" [ngClass]="{'active': th.sortingButtonName == 'asc'}">
+                              <ion-icon name="arrow-dropup"></ion-icon>
+                            </span>
+                            <span class="desc-sort" [hidden]="th.sortingButtonName == 'asc'" [ngClass]="{'active': th.sortingButtonName == 'desc'}">
+                              <ion-icon name="arrow-dropdown"></ion-icon>
+                            </span>
+                          </span>
+                        </th>
+                        <th>
+                          <span>Action</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of fetchItems; let i = index" [hidden]="isListLoading">
+                          <td data-title="ID">
+                            <!-- <span>{{i + 1}}</span> -->
+                            <span>{{listAlldata.from + i}}</span>
+                          </td>
+                          <td>         
+                              <ion-checkbox name="checkbox_name" [(ngModel)]="item.isSelected"  slot="end" (ionChange)="onCheckboxSelect(item, $event)" ></ion-checkbox>
+                          </td>
+            
+                          <!-- table data -->
+                          <!-- <td *ngFor="let th of tableHeaderData | filtermulti: [{is_default:1},{is_display:1}]"> -->
+                            <td *ngFor="let th of tableHeaderData " [hidden]="th.is_default == 0" [routerLink]="['/', 'transaction-view', item.id]">
+            
+                              <!-- lender -->
+                              <span *ngIf="th.column_name === 'lender'">
+                                {{ item.lender?.name }} 
+                              </span>
+            
+                              <!-- brrower -->
+                              <span *ngIf="th.column_name === 'brrower'">
+                                {{ item.brrower?.name }} 
+                              </span>
+            
+                              <!-- lgroup -->
+                              <span *ngIf="th.column_name === 'lgroup'">
+                                {{ item.lgroup?.name }} 
+                              </span>
+            
+                              <!-- bgroup -->
+                              <span *ngIf="th.column_name === 'bgroup'">
+                                {{ item.bgroup?.name }} 
+                              </span>
+            
+                              <!-- transaction_status -->
+                              <span *ngIf="th.column_name === 'transaction_status'">
+                                {{ transactionStatuss[item.transaction_status]?.name }} 
+                              </span>
+            
+                              <!--all  common -->
+                              <span *ngIf="th.column_name !== 'lender' && th.column_name !== 'brrower' && th.column_name !== 'lgroup' && th.column_name !== 'bgroup' && th.column_name !== 'transaction_status'"> {{ item[th.column_name] }} </span>
+                          </td>
+            
+                          <td class="action">
+                            <!-- <ion-icon name="create"></ion-icon> -->
+                            <ion-button tooltip="Edit" flow="left" delay="500" [routerLink]="['/', 'add-transaction', 'edit', item.id]" >
+                              <ion-icon name="create"></ion-icon>
+                            </ion-button>
+                            <!-- <ion-button  tooltip="Delete File" flow="left" delay="500" (click)="deleteAlertConfirm(files, i)" color="danger" size="small">
+                                <ion-icon ios="ios-trash" md="md-trash"></ion-icon>
+                            </ion-button> -->
+                          </td>
+                      </tr>
+                      <tr [hidden]="!isListLoading" class="loading-table-data">
+                        <td colspan="100">
+                          <span style="font-size: 16px;">Data is loading...</span>
+                        </td>
+                      </tr>
+                      <tr *ngIf="fetchItems?.length == 0 && !isListLoading" class="loading-table-data">
+                        <td colspan="100">
+                            No Data Found
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <ion-row>
+                  <ion-col size-xs="12" class="footer pull-left nomargin nopadding width-100">
+                    <ul class="left-menu pull-left padding-left-0 margin-top-14">
+                      <li (click)="onRefreshPage($event)" >
+                        <ion-button class="background-orange" tooltip="Refresh" flow="right" delay="500">
+                            <ion-icon name="refresh"></ion-icon>
+                        </ion-button>
+                      </li>
+                    </ul>
+                  </ion-col>
+                </ion-row>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <div class="company-info page-inner">
+            <mat-accordion>
+              <mat-expansion-panel (opened)="panelOpenState = true"
+                                    (closed)="panelOpenState = false">
+                <mat-expansion-panel-header (click)="toggleMenuFile = !toggleMenuFile">
+                  <mat-panel-title>
+                    Files []
+                  </mat-panel-title>
+                  <span class="open-close-btn">
+                    <i *ngIf="!toggleMenuFile" class="down material-icons">keyboard_arrow_down</i>
+                    <i *ngIf="!!toggleMenuFile" class="up material-icons">keyboard_arrow_up</i>
+                  </span>
+                </mat-expansion-panel-header>
+                <div class="company-info-body margin-top-10" style="border: none">
+                  <div class="add-files">
+                    <ion-row>
+                      <ion-col>
+                        <span class="open-close-btn" (click)="toggleShow = !toggleShow">
+                          <ion-icon class="add" *ngIf="!toggleShow" name="add"></ion-icon>
+                          <ion-icon class="close" *ngIf="!!toggleShow" name="close"></ion-icon>
+                          {{!toggleShow ? 'Add More Files' : 'Close' }}
+                        </span>
+                      </ion-col>
+                    </ion-row>
+                    
+                    <ion-grid *ngIf="!!toggleShow">
+                        <ion-row class="file-upload">
+                            <ion-col size-xs="12" size-sm="12" size-md="12"  size-lg="12">
+                                <!-- <div class="file-uploading" (click)="fileInput.click()" appDragDrop (onFileDropped)="uploadFile('multi', $event)">
+                                    <div>
+                                        <input hidden type="file" #fileInput (change)="uploadFile('multi', $event.target.files)" multiple>
+                                    </div>
+                                </div> -->
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                  </div>
+                  <div class="table-outer" style="overflow-x:auto;">
+                    <table class="data-table">
+                      <thead>
+                        <tr>
+                          <th style="padding-left: 3px;">
+                            <span>
+                                <ion-icon style="zoom:2.0;" name="information"></ion-icon>
+                            </span>
+                          </th>
+                          <th>
+                            <div class="ion-checkbox" [hidden]="isListLoading">
+                              <ion-checkbox slot="end" name="select_all_item" [(ngModel)]="allselectModel" (ionChange)="allSelectItem($event)" ></ion-checkbox>
+                            </div>
+                          </th> 
+                          <!-- table header -->
+                          <th *ngFor="let th of tableHeaderData " [hidden]="th.is_default == 0 || isListLoading" (click)="th.is_sortable == 1 && isSortTableHeader(tableHeaderData, th)">
+                            <span>{{th.display_name}}</span>
+                            <!-- sorting header -->
+                            <span *ngIf="th.is_sortable == 1">
+                              <span class="asc-sort" [hidden]="th.sortingButtonName == 'desc'" [ngClass]="{'active': th.sortingButtonName == 'asc'}">
+                                <ion-icon name="arrow-dropup"></ion-icon>
+                              </span>
+                              <span class="desc-sort" [hidden]="th.sortingButtonName == 'asc'" [ngClass]="{'active': th.sortingButtonName == 'desc'}">
+                                <ion-icon name="arrow-dropdown"></ion-icon>
+                              </span>
+                            </span>
+                          </th>
+                          <th>
+                            <span>Action</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of fetchItems; let i = index" [hidden]="isListLoading">
+                            <td data-title="ID">
+                              <!-- <span>{{i + 1}}</span> -->
+                              <span>{{listAlldata.from + i}}</span>
+                            </td>
+                            <td>         
+                                <ion-checkbox name="checkbox_name" [(ngModel)]="item.isSelected"  slot="end" (ionChange)="onCheckboxSelect(item, $event)" ></ion-checkbox>
+                            </td>
+              
+                            <!-- table data -->
+                            <!-- <td *ngFor="let th of tableHeaderData | filtermulti: [{is_default:1},{is_display:1}]"> -->
+                              <td *ngFor="let th of tableHeaderData " [hidden]="th.is_default == 0" [routerLink]="['/', 'transaction-view', item.id]">
+              
+                                <!-- lender -->
+                                <span *ngIf="th.column_name === 'lender'">
+                                  {{ item.lender?.name }} 
+                                </span>
+              
+                                <!-- brrower -->
+                                <span *ngIf="th.column_name === 'brrower'">
+                                  {{ item.brrower?.name }} 
+                                </span>
+              
+                                <!-- lgroup -->
+                                <span *ngIf="th.column_name === 'lgroup'">
+                                  {{ item.lgroup?.name }} 
+                                </span>
+              
+                                <!-- bgroup -->
+                                <span *ngIf="th.column_name === 'bgroup'">
+                                  {{ item.bgroup?.name }} 
+                                </span>
+              
+                                <!-- transaction_status -->
+                                <span *ngIf="th.column_name === 'transaction_status'">
+                                  {{ transactionStatuss[item.transaction_status]?.name }} 
+                                </span>
+              
+                                <!--all  common -->
+                                <span *ngIf="th.column_name !== 'lender' && th.column_name !== 'brrower' && th.column_name !== 'lgroup' && th.column_name !== 'bgroup' && th.column_name !== 'transaction_status'"> {{ item[th.column_name] }} </span>
+                            </td>
+              
+                            <td class="action">
+                              <!-- <ion-icon name="create"></ion-icon> -->
+                              <ion-button tooltip="Edit" flow="left" delay="500" [routerLink]="['/', 'add-transaction', 'edit', item.id]" >
+                                <ion-icon name="create"></ion-icon>
+                              </ion-button>
+                              <!-- <ion-button  tooltip="Delete File" flow="left" delay="500" (click)="deleteAlertConfirm(files, i)" color="danger" size="small">
+                                  <ion-icon ios="ios-trash" md="md-trash"></ion-icon>
+                              </ion-button> -->
+                            </td>
+                        </tr>
+                        <tr [hidden]="!isListLoading" class="loading-table-data">
+                          <td colspan="100">
+                            <span style="font-size: 16px;">Data is loading...</span>
+                          </td>
+                        </tr>
+                        <tr *ngIf="fetchItems?.length == 0 && !isListLoading" class="loading-table-data">
+                          <td colspan="100">
+                              No Data Found
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <ion-row>
+                    <ion-col size-xs="12" class="footer pull-left nomargin nopadding width-100">
+                      <ul class="left-menu pull-left padding-left-0 margin-top-14">
+                        <li (click)="onRefreshPage($event)">
+                          <ion-button class="background-orange" tooltip="Refresh" flow="right" delay="500">
+                              <ion-icon name="refresh"></ion-icon>
+                          </ion-button>
+                        </li>
+                      </ul>
+                    </ion-col>
+                  </ion-row>
+                </div>
+              </mat-expansion-panel>
+            </mat-accordion>
+            
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<!-- common footer show -->
+<common-footer></common-footer>

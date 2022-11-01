@@ -1,0 +1,198 @@
+<!-- common header show -->
+<common-header></common-header>
+ 
+<ion-content class="page-wrapper">
+    <div class="page-inner">
+        <ion-row class="width-100 sub-header nomargin nopadding">
+            <ion-col size-xs="7" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+                <div class = "sub-header-color pull-left width-100 font-size-18 vertical-middle">
+                    <span>{{actionHeaderText}} Country</span>
+                </div>
+            </ion-col>
+            <ion-col size-xs="5" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+                <div class = "sub-header-color width-100 text-right">
+                <span class="font-size-13"> {{curentDate | date:'dd MMM yyy'}} <i>|</i> {{curentDate | date:'h:mm a '}}</span>
+                </div>
+            </ion-col>
+        </ion-row> 
+        <div class="add-new-page-body" [ngClass]="{'disabled': form_submit_text == 'Submitting'}">
+
+            <!-- loading -->
+            <div class="edit-loading-page" *ngIf="editLoading">
+                <span>
+                    <ion-spinner name="lines"></ion-spinner>
+                </span>
+            </div>
+            <form  #addForm="ngForm" (ngSubmit)="onSubmit(addForm)" >
+                <div class="add-new-page-underpart">
+                    <ion-grid>
+                        <ion-row>
+                            <!-- for edit -->
+                            <input *ngIf="actionHeaderText == 'Edit'" type="hidden" name="_method" [(ngModel)]="onEditField">
+
+                            <!-- Name -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4">
+                                <div>
+                                    <ion-label position="floating">Name<sup>*</sup></ion-label>
+                                    <ion-input name="name" [(ngModel)]="model.name" clearInput required></ion-input>
+                                </div>
+                            </ion-col>
+ 
+                            <!-- ISO -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4">
+                              <div>
+                                <ion-label position="floating">ISO<sup>*</sup></ion-label>
+                                <ion-input name="iso_code" [(ngModel)]="model.iso_code" clearInput required></ion-input>
+                              </div> 
+                            </ion-col>
+                            
+                            <!-- TEL Prefix -->
+                            <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="4">
+                              <div>
+                                <ion-label position="floating">TEL Prefix<sup>*</sup></ion-label>
+                                <ion-input name="tel_prefix" [(ngModel)]="model.tel_prefix" clearInput required></ion-input>
+                              </div>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row> 
+                          <!-- Flag Image -->
+                          <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="6">
+                            <div class="file_upload">
+                                <ion-label position="floating">Flag Image</ion-label>
+                                <div class="normal-file-uploading">
+                                    <span class="upload-file">
+                                        "Select Image"
+                                        <input [(ngModel)]="model.flag2" type="file" (change)="normalFileUpload($event)" placeholder="Upload file" [ngModelOptions]="{standalone: true}" accept="image/*">
+                                    </span>
+                                    <!-- accept=".pdf,.jpg,.doc,.docx" -->
+                                    <span [hidden]="!model.flag" class="file-name">{{model.flag}}</span>
+                                    <span class="image-clear" (click)="fileCross(model.flag)" [hidden]="!model.flag">
+                                        <ion-icon name="close"></ion-icon>
+                                    </span>
+                                </div>
+                            </div>
+                          </ion-col>
+                          <!-- Enable -->
+                          <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="6">
+                            <div class="toggle-button">
+                                <ion-label>Enable</ion-label>
+                                <ion-label>
+                                    <p class="onoff"><input type="checkbox" value="1" id="checkboxID" name="status" [(ngModel)]="model.enable" (ngModelChange)="onChangeStatus(model.enable)"><label for="checkboxID"></label></p>
+                                </ion-label>
+                            </div>
+                          </ion-col>
+                        </ion-row>
+                        <!-- upload file show start -->
+                        <ion-row >
+                            <ion-col size-xs="12" size-sm="12" size-md="12"  size-lg="12">
+                                <div style="overflow-x:auto;" class="uploading-info">
+                                    <table>
+                                        <thead *ngIf="files.length > 0">
+                                            <tr>
+                                                <th style="padding-left: 3px;">
+                                                    <span>
+                                                        <ion-icon style="zoom:2.0;" name="information"></ion-icon>
+                                                    </span>
+                                                </th>
+                                                <!-- table header -->
+                                                <th>
+                                                    <span>Extension</span>
+                                                </th>
+                                                <th>
+                                                    <span>File Name</span>
+                                                </th>
+                                                <th>
+                                                    <span>File Size</span>
+                                                </th>
+                                                <th>
+                                                    <span>Action</span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let file of files;let i= index">
+                                                <td>
+                                                    <!--id-->
+                                                    <input type="hidden" name="file[{{i}}][id]" [(ngModel)]="file.id">
+
+                                                    <!--temp_id-->
+                                                    <input type="hidden" name="file[{{i}}][temp_id]" [(ngModel)]="file.file_id">
+
+                                                    <!--drag and drop file name-->
+                                                    <input  type="hidden" name="file[{{i}}][file_name]" [(ngModel)]="file.file_name">
+
+                                                    <span>{{i + 1}}</span>
+                                                </td>
+                                                <td>
+                                                    <span>{{ file.file_extension }}</span>
+                                                </td>
+                                                <td>
+                                                    <input class="file-name"  type="text" name="file[{{i}}][file_name]" [(ngModel)]="file.file_name">
+                                                    <ion-icon name="create"></ion-icon>
+                                                </td>
+                                                <td>
+                                                    <span>{{ file.file_size |  fileSizeConvert }}</span>
+                                                </td>
+                                                <td>
+                                                    <!-- delete button -->
+                                                    <ion-button (click)="deleteAlertConfirm(files, i)" color="danger" size="small"
+                                                    tooltip="Delete" flow="up">
+                                                        <ion-icon ios="ios-trash" md="md-trash"></ion-icon>
+                                                    </ion-button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="100" class="progress-bar">
+                                                    <div class="progress-outer" *ngIf="uploadResponseProgress > 0 && uploadResponseProgress  ">
+                                                        <div class="progress-inner" [style.width.%]="uploadResponseProgress">{{uploadResponseProgress}} % </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+                        <!-- upload file show end -->
+                    </ion-grid>
+                </div> 
+                <div class="form-button-section">
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col class="ion-text-center" size-xs="12" size-sm="12" size-md="12"  size-lg="12">
+                                <!-- Reload Button -->
+                                <ion-button color="danger" size="default" tooltip="Reload" (click)="reloadPageAlert()">
+                                    Reload
+                                </ion-button>
+                                <!-- Save Button -->
+                                <ion-button (click)="clickButtonType('Save')" color="secondary" size="default"
+                                type="submit" [disabled]="!addForm.valid" 
+                                color="secondary" tooltip="Save" flow="up">
+                                    <ion-spinner *ngIf="form_submit_text_save == 'Submitting'" name="crescent"></ion-spinner> 
+                                    <span class="submitText">{{form_submit_text_save}}</span>
+                                </ion-button>
+                                <!-- Save Another Button -->
+                                <ion-button (click)="clickButtonType('Save-add-another')" color="secondary" size="default"
+                                    type="submit" [disabled]="!addForm.valid" 
+                                    color="secondary" tooltip="Save & Add Another" flow="up">
+                                    <ion-spinner *ngIf="form_submit_text_save_another == 'Submitting'" name="crescent"></ion-spinner> 
+                                    <span class="submitText">
+                                        <span class="submitText">{{form_submit_text_save_another}}</span>
+                                    </span>
+                                </ion-button>
+                                <!-- Cancel Button -->
+                                <ion-button size="default" fill="clear" color="danger" tooltip="Cancel" flow="up" [routerLink]="['/', 'country-list']">
+                                    <ion-icon name="close"></ion-icon>
+                                    Cancel
+                                </ion-button>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </div>
+            </form>
+        </div>
+    </div>
+</ion-content>
+
+<!-- common footer show -->
+<common-footer></common-footer>

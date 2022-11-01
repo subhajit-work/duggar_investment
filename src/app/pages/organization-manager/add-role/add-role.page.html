@@ -1,0 +1,260 @@
+<!-- common header show -->
+<common-header></common-header>
+  
+<ion-content class="page-wrapper">
+    <div class="page-inner">
+        <ion-row class="width-100 sub-header nomargin nopadding">
+            <ion-col size-xs="7" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+                <div class = "sub-header-color pull-left width-100 font-size-18 vertical-middle">
+                    <span>{{actionHeaderText}} Role</span>
+                </div>
+            </ion-col>
+            <ion-col size-xs="5" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+                <div class = "sub-header-color width-100 text-right">
+                <span class="font-size-13"> {{curentDate | date:'dd MMM yyy'}} <i>|</i> {{curentDate | date:'h:mm a '}}</span>
+                </div>
+            </ion-col>
+        </ion-row>
+        <div class="add-new-page-body" [ngClass]="{'disabled': form_submit_text == 'Submitting'}">
+            
+            <!-- loading -->
+            <div class="edit-loading-page" *ngIf="editLoading">
+                <span>
+                    <ion-spinner name="lines"></ion-spinner>
+                </span>
+            </div>
+
+            <form  #addForm="ngForm" (ngSubmit)="onSubmit(addForm)">
+                <div class="company-info">
+                    <!-- for edit -->
+                    <input *ngIf="actionHeaderText == 'Edit'" type="hidden" name="_method" [(ngModel)]="onEditField">
+
+                    <mat-accordion>
+                        <!-- <mat-expansion-panel (opened)="panelOpenState = true"
+                                            (closed)="panelOpenState = false"> -->
+                        <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title class="font-size-18">
+                                    Role Information
+                                </mat-panel-title>
+                                <span class="open-close-btn">
+                                    <i class="down material-icons">keyboard_arrow_down</i>
+                                    <i class="up material-icons">keyboard_arrow_up</i>
+                                </span>
+                            </mat-expansion-panel-header>
+                            <div class="company-info-body">
+                            <ion-grid>
+                            <ion-row>
+                                <!-- Name -->
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="5">
+                                    <div>
+                                        <ion-label position="floating">Name<sup>*</sup></ion-label>
+                                        <ion-input name="name" [(ngModel)]="model.name" clearInput required></ion-input>
+                                    </div>
+                                </ion-col>
+                                <!-- Display Name -->
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="5">
+                                    <div>
+                                        <ion-label position="floating"> Display Name</ion-label>
+                                        <ion-input name="display_name" [(ngModel)]="model.display_name" clearInput></ion-input>
+                                    </div>
+                                </ion-col>
+                                <!-- Enable -->
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="2">
+                                    <div class="toggle-button">
+                                        <ion-label>Enable</ion-label>
+                                        <ion-label>
+                                            <p class="onoff"><input type="checkbox" value="1" id="checkboxID" name="status" [(ngModel)]="model.enable"><label for="checkboxID"></label></p>
+                                        </ion-label>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
+                            </ion-grid>
+                            </div>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </div> 
+                <div class="company-info">
+                    <mat-accordion>
+                        <mat-expansion-panel (opened)="panelOpenState = true"
+                                            (closed)="panelOpenState = false">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title class="font-size-18">
+                                    Role Permissions
+                                </mat-panel-title>
+                                <span class="open-close-btn">
+                                    <i class="down material-icons">keyboard_arrow_down</i>
+                                    <i class="up material-icons">keyboard_arrow_up</i>
+                                </span>
+                            </mat-expansion-panel-header>
+                            <div class="company-info-body role-information">
+                                <mat-accordion>
+                                    <mat-expansion-panel *ngFor="let item of modulesList; let pi = index;">
+
+                                        <!-- hidden input -->
+                                        <input type="hidden" name="module[{{pi}}][id]" [(ngModel)]="item.id">
+
+                                        <mat-expansion-panel-header>
+                                            <mat-panel-title style="text-transform: capitalize;">{{item.name}}</mat-panel-title>
+                                            <span class="open-close-btn">
+                                                <i class="down material-icons">keyboard_arrow_down</i>
+                                                <i class="up material-icons">keyboard_arrow_up</i>
+                                            </span>
+                                        </mat-expansion-panel-header>
+                                        <div class="company-info-body">
+                                            <div class="table-outer2">
+                                                <table class="data-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th><span>Module Sections </span></th>
+                                                            <th><span>Access</span></th>
+                                                            <th><span>Insert</span></th>
+                                                            <th><span>Update</span></th>
+                                                            <th><span>View</span></th>
+                                                            <th><span>List</span></th>
+                                                            <th><span>Delete</span></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let item of item.pages; let i = index; let first = first;">
+                                                            <td data-title="ID">
+                                                                <span style="text-transform: capitalize;">{{item.name}}</span>
+
+                                                                <!-- hidden input -->
+                                                                <input type="hidden" name="module[{{pi}}][page][{{i}}][id]" [(ngModel)]="item.id">
+
+                                                            </td>
+                                                            <td>         
+                                                                <ng-select 
+                                                                    [items]="boolenItems"
+                                                                    bindLabel="name"
+                                                                    bindValue="id"
+                                                                    placeholder="Select"
+                                                                    name = "module[{{pi}}][page][{{i}}][permission][0][access]"
+                                                                    [(ngModel)]="item.access"
+                                                                    appendTo="body">
+                                                                </ng-select>
+
+                                                                <input type="hidden" name="module[{{pi}}][page][{{i}}][permission][0][id]" [(ngModel)]="item.giveSetValAccess">
+
+                                                                <!-- [(ngModel)]="access"
+                                                                *ngInit="item.page_permissions[0].permission_access as access" -->
+                                                            </td>
+                                                            <td>         
+                                                                <ng-select 
+                                                                    [items]="boolenItems"
+                                                                    bindValue="id"
+                                                                    bindLabel="name"
+                                                                    placeholder="Select"
+                                                                    name = "module[{{pi}}][page][{{i}}][permission][1][access]"
+                                                                    [(ngModel)]="item.insert"
+                                                                    appendTo="body">
+                                                                </ng-select>
+
+                                                                <input type="hidden" name="module[{{pi}}][page][{{i}}][permission][1][id]" [(ngModel)]="item.giveSetValInsert">
+
+                                                            </td>
+                                                            <td>         
+                                                                <ng-select 
+                                                                    [items]="accessTypes"
+                                                                    bindValue="id"
+                                                                    bindLabel="name"
+                                                                    placeholder="Select"
+                                                                    name = "module[{{pi}}][page][{{i}}][permission][2][access]"
+                                                                    [(ngModel)]="item.update"
+                                                                    appendTo="body">
+                                                                </ng-select>
+
+                                                                <input type="hidden" name="module[{{pi}}][page][{{i}}][permission][2][id]" [(ngModel)]="item.giveSetValUpdate">
+
+                                                            </td>
+                                                            <td>         
+                                                                <ng-select 
+                                                                    [items]="boolenItems"
+                                                                    bindValue="id"
+                                                                    bindLabel="name"
+                                                                    placeholder="Select"
+                                                                    name = "module[{{pi}}][page][{{i}}][permission][3][access]"
+                                                                    [(ngModel)]="item.view"
+                                                                    appendTo="body">
+                                                                </ng-select>
+
+                                                                <input type="hidden" name="module[{{pi}}][page][{{i}}][permission][3][id]" [(ngModel)]="item.giveSetValView">
+
+                                                            </td>
+                                                            <td>         
+                                                                <ng-select 
+                                                                    [items]="accessTypes"
+                                                                    bindValue="id"
+                                                                    bindLabel="name"
+                                                                    placeholder="Select"
+                                                                    name = "module[{{pi}}][page][{{i}}][permission][4][access]"
+                                                                    [(ngModel)]="item.list"
+                                                                    appendTo="body">
+                                                                </ng-select>
+
+                                                                <input type="hidden" name="module[{{pi}}][page][{{i}}][permission][4][id]" [(ngModel)]="item.giveSetValList">
+
+                                                            </td>
+                                                            <td>         
+                                                                <ng-select 
+                                                                    [items]="accessTypes"
+                                                                    bindValue="id"
+                                                                    bindLabel="name"
+                                                                    placeholder="Select"
+                                                                    name = "module[{{pi}}][page][{{i}}][permission][5][access]"
+                                                                    [(ngModel)]="item.delete"
+                                                                    appendTo="body">
+                                                                </ng-select>
+
+                                                                <!-- type="hidden" -->
+                                                                <input type="hidden" name="module[{{pi}}][page][{{i}}][permission][5][id]" [(ngModel)]="item.giveSetValDelete">
+
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </mat-expansion-panel>
+                                </mat-accordion>
+                            </div>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </div>
+                <div class="form-button-section">
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col class="ion-text-center" size-xs="12" size-sm="12" size-md="12"  size-lg="12">
+                                <ion-button color="danger" size="default" tooltip="Reload" (click)="reloadPageAlert()">
+                                    Reload
+                                </ion-button>
+                                <ion-button (click)="clickButtonType('Save')" color="secondary" size="default"
+                                type="submit" [disabled]="!addForm.valid" 
+                                color="secondary" tooltip="Save" flow="up">
+                                    <ion-spinner *ngIf="form_submit_text_save == 'Submitting'" name="crescent"></ion-spinner> 
+                                    <span class="submitText">{{form_submit_text_save}}</span>
+                                </ion-button>
+                                <ion-button (click)="clickButtonType('Save-add-another')" color="secondary" size="default"
+                                    type="submit" [disabled]="!addForm.valid" 
+                                    color="secondary" tooltip="Save & Add Another" flow="up">
+                                    <ion-spinner *ngIf="form_submit_text_save_another == 'Submitting'" name="crescent"></ion-spinner> 
+                                    <span class="submitText">
+                                        <span class="submitText">{{form_submit_text_save_another}}</span>
+                                    </span>
+                                </ion-button>
+                                <ion-button size="default" fill="clear" color="danger" tooltip="Cancel" flow="up" [routerLink]="['/', 'role-list']">
+                                    <ion-icon name="close"></ion-icon>
+                                    Cancel
+                                </ion-button>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </div>
+            </form>
+        </div>
+    </div>
+</ion-content>
+
+<!-- common footer show -->
+<common-footer></common-footer>

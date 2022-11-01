@@ -1,0 +1,428 @@
+<!-- common header show -->
+<common-header></common-header>
+
+<ion-content class="page-wrapper" *ngIf="permissionArray">
+  <div class="page-inner">
+    <!-- ------------ sub Header Start ----------------->
+    <ion-row class="sub-header width-100 pull-left nomargin nopadding">
+      <ion-col size-xs="7" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+        <div class = "sub-header-color pull-left width-100 font-size-18 vertical-middle">
+          <span>Receive Invoice Listing </span>
+          <!-- <ion-button class="font-size-11" tooltip="Add Group" flow="up" delay="500" [routerLink]="['/', 'add-group', 'add', 'id']" *ngIf="permissionArray[1]?.permission_access > 0">
+            <ion-icon name="add"></ion-icon>
+          </ion-button> -->
+        </div>
+      </ion-col>
+      <ion-col size-xs="5" size-sm="6" class = "transaction-inner pull-left width-100 padding-10">
+        <div class = "sub-header-color width-100 text-right">
+          <span class="font-size-13"> {{curentDate | date:'dd MMM yyy'}} <i>|</i> {{curentDate | date:'h:mm a '}}</span>
+        </div>
+      </ion-col>
+    </ion-row>
+    <!-- ------------ sub Header End ----------------->
+    <ion-row class="display-search width-100">
+      <ion-col size-xs="12" size-sm="8" class="text-center">
+        <!-- display record start -->
+        <div class="display-records">
+            <ion-item class="record" lines="none">
+              <span>Records: </span>
+                <mat-select [(ngModel)]="displayRecord" name="food" (selectionChange)="displayRecordChange($event.value)">
+                  <mat-option *ngFor="let record of displayRecords" [value]="record.displayValue">
+                    {{record.displayValue}}
+                  </mat-option>
+                </mat-select>
+            </ion-item>
+            <span class="buttons pull-left">
+              <!-- mobile search button show -->
+              <ion-button class="mobile-search" tooltip="Search" flow="up" delay="500" (click)="toggleMobileSearch = !toggleMobileSearch">
+                <ion-icon name="search"></ion-icon>
+              </ion-button>
+            </span>
+        </div>
+        <!-- display record end -->
+      </ion-col>
+      <!-- ======= search for mobile start ======= -->
+      <ion-col size-xs="12" size-sm="4" class="ion-float-right" class="left-search" *ngIf="!!toggleMobileSearch">
+          <ion-item lines="none">
+            <ion-searchbar placeholder="Search"  debounce="1000" [(ngModel)]="searchTerm" (ionChange)="searchList($event)"> </ion-searchbar>
+            <ion-button tooltip="Advanced Search" flow="left" delay="500" (click)="toggleShow = !toggleShow">
+                <ion-icon name="search"></ion-icon>
+            </ion-button>
+            <!-- <ion-button   color="light">
+                <ion-icon ios="ios-close" md="md-close"></ion-icon>
+            </ion-button> -->
+          </ion-item>
+        </ion-col>
+        <!-- ====== search for mobile end ========= -->
+      <!-- search start -->
+      <ion-col size-xs="12" size-sm="4" class="ion-float-right" class="left-search left-search-mobile">
+        <ion-item lines="none">
+          <ion-searchbar placeholder="Search"  debounce="1000" [(ngModel)]="searchTerm" (ionChange)="searchList($event)"> </ion-searchbar>
+          <ion-button tooltip="Advanced Search" flow="left" delay="500" (click)="toggleShow = !toggleShow; searchTerm=''">
+              <ion-icon name="search"></ion-icon>
+          </ion-button>
+          <!-- <ion-button   color="light">
+              <ion-icon ios="ios-close" md="md-close"></ion-icon>
+          </ion-button> -->
+        </ion-item>
+      </ion-col>
+      <!-- search end -->
+    </ion-row>
+
+    <!-- advance search start (using template diven form)-->
+    <form class="advance-search-form" #advSearchTransactionForm="ngForm" (ngSubmit)="onSubmitAdvanceForm(advSearchTransactionForm)" *ngIf="!!toggleShow">
+            
+      <ion-grid class="advance-search-form-underpart">
+      <ion-row>
+
+        <!-- Transaction Id -->
+        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+          <div>
+            <ion-label position="floating">Transaction Id</ion-label>
+            <ion-input name="id" [(ngModel)]="model.transaction_id" clearInput ></ion-input>
+          </div>
+        </ion-col>
+
+
+        <!-- Lender-->
+        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+          <ion-label position="floating"> Lender </ion-label>
+          <ng-select #lenderSerch
+              [loading]="selectLoadingDependLender"
+              [dropdownPosition]="'bottom'"
+              placeholder="Please Select Lender"
+              [items]="lenderList"
+              bindLabel="name"
+              name="lender_id"
+              bindValue="id"
+              (change)="onChange(model.lender_id)"
+              [searchable]="false"
+              [(ngModel)]="model.lender_id"
+              >
+              <ng-template ng-header-tmp>
+                  <input placeholder="Search" class="dropdown-custom-search" type="text" (input)="lenderSerch.filter($event.target.value)" [autofocus]="true" />
+              </ng-template>
+          </ng-select>
+        </ion-col>
+
+        <!-- Borrower-->
+        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+          <ion-label position="floating"> Borrower </ion-label>
+          <ng-select #borrowerSerch
+              [loading]="selectLoading"
+              [dropdownPosition]="'bottom'"
+              placeholder="Please Select Borrower"
+              [items]="borrowerList"
+              bindLabel="name"
+              name="brrower_id"
+              bindValue="id"
+              (change)="onChange($event)"
+              [searchable]="false"
+              [(ngModel)]="model.brrower_id"
+              >
+              <ng-template ng-header-tmp>
+                  <input placeholder="Search" class="dropdown-custom-search" type="text" (input)="borrowerSerch.filter($event.target.value)" [autofocus]="true" />
+              </ng-template>
+          </ng-select>
+        </ion-col>
+
+        <!-- Principle -->
+        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+          <div>
+            <ion-label position="floating">Principle</ion-label>
+            <ion-input name="principle" [(ngModel)]="model.principle" clearInput ></ion-input>
+          </div>
+        </ion-col>
+
+        <!-- Interest Rate -->
+        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+          <div>
+            <ion-label position="floating">Monthly Interest Rate (%)</ion-label>
+            <ion-input name="interest_rate" [(ngModel)]="interest" clearInput ></ion-input>
+          </div>
+        </ion-col>
+
+        <!--Brokerage-->
+        <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+          <div>
+              <ion-label position="floating">Monthly Brokerage Rate(%)</ion-label>
+              <ion-input OnlyNumber="true" name="brokerage" [(ngModel)]="model.brokerage" clearInput ></ion-input>
+          </div>
+        </ion-col>
+
+      </ion-row>
+      <ion-row class="form-button-section">
+          <!-- Buttons -->
+          <ion-col>
+              <ion-button color="secondary" size="default" color="secondary" type="submit" [disabled]="!advSearchTransactionForm.valid">
+                  <ion-icon name="search"></ion-icon>
+                  Search
+              </ion-button>
+              <ion-button size="default" fill="clear" color="danger" (click)="toggleShow = false; onRefreshPage($event)">
+                  <ion-icon name="close"></ion-icon>
+                  Cancel
+              </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </form>
+    <!-- advance search end -->
+
+    <!-- list data show in table format start -->
+    <div class="table-outer" style="overflow-x:auto;">
+      <table class="data-table">
+        <thead [ngClass]="{'disabled-only-pointer':isListLoading}">
+          <tr>
+
+            <th style="padding-left: 3px;">
+              <span>
+                  <ion-icon style="zoom:2.0;" name="information"></ion-icon>
+              </span>
+            </th>
+
+            <th>
+              <div class="ion-checkbox" [hidden]="isListLoading">
+                <ion-checkbox slot="end" name="select_all_item" [(ngModel)]="allselectModel"></ion-checkbox>
+              </div>
+            </th> 
+
+            <!-- table header -->
+            <th *ngFor="let th of tableHeaderData " [hidden]="th.is_default == 0 || isListLoading" (click)="th.is_sortable == 1 && isSortTableHeader(tableHeaderData, th)">
+              <span>{{th.display_name}}</span>
+              <!-- sorting header -->
+              <span *ngIf="th.is_sortable == 1">
+                <span class="asc-sort" [hidden]="th.sortingButtonName == 'desc'" [ngClass]="{'active': th.sortingButtonName == 'asc'}">
+                  <ion-icon name="arrow-dropup"></ion-icon>
+                </span>
+                <span class="desc-sort" [hidden]="th.sortingButtonName == 'asc'" [ngClass]="{'active': th.sortingButtonName == 'desc'}">
+                  <ion-icon name="arrow-dropdown"></ion-icon>
+                </span>
+              </span>
+            </th>
+
+            <th>
+              <span>Action</span>
+            </th>
+
+            <th class="column-selection-popover" tooltip="Select Column" flow="left" delay="500">
+                <ion-icon name="options" style="zoom:2.0;" (click)="openColumnselection($event)" ></ion-icon>
+            </th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of fetchItems; let i = index" [hidden]="isListLoading" [ngClass]="{'hilight_activated': (activeHighlightIndex == listAlldata.from + i)}">
+              <td data-title="ID">
+                <!-- <span>{{i + 1}}</span> -->
+                <span>{{listAlldata.from + i}}</span>
+              </td>
+              <td>         
+                  <ion-checkbox name="checkbox_name" [(ngModel)]="item.isSelected"  slot="end"  ></ion-checkbox>
+              </td>
+
+              <!-- table data -->
+              <!-- <td *ngFor="let th of tableHeaderData | filtermulti: [{is_default:1},{is_display:1}]"> -->
+              <td *ngFor="let th of tableHeaderData " [hidden]="th.is_default == 0" >
+
+                  <!-- lender -->
+                  <span *ngIf="th.column_name === 'lender'">
+                    {{ item?.brokerage[0]?.transaction?.lender?.name }} 
+                  </span>
+
+                  <!-- brrower -->
+                  <span *ngIf="th.column_name === 'brrower'">
+                    {{ item?.brokerage[0]?.transaction?.brrower?.name }} 
+                  </span>
+
+                  <!-- lgroup -->
+                  <span *ngIf="th.column_name === 'lgroup'">
+                    {{ item?.brokerage[0]?.transaction?.lgroup?.name }} 
+                  </span>
+
+                  <!-- bgroup -->
+                  <span *ngIf="th.column_name === 'bgroup'">
+                    {{ item?.brokerage[0]?.transaction?.bgroup?.name }} 
+                  </span>
+
+                  <!-- Principle -->
+                  <span *ngIf="th.column_name === 'transaction'">
+                    {{ item?.brokerage[0]?.transaction?.principle }} 
+                  </span>
+
+                  <!-- cycle_days -->
+                  <span *ngIf="th.column_name === 'cycle_days'">
+                    {{ item?.brokerage[0]?.transaction?.cycle_days }} 
+                  </span>
+
+                  <!-- brokerage -->
+                  <span *ngIf="th.column_name === 'brokerage'">
+                    {{ item?.brokerage[0]?.transaction?.brokerage }} 
+                  </span>
+
+                  <!-- interest_rate -->
+                  <span *ngIf="th.column_name === 'interest_rate'">
+                    {{ item?.brokerage[0]?.transaction?.interest_rate }} 
+                  </span>
+
+                  <!-- brokerage Amt" -->
+                  <span *ngIf="th.column_name === 'total_amount'">
+                    {{ item?.brokerage_pay_total}} 
+                  </span>
+
+                  <!-- pymnt_status -->
+                  <span *ngIf="th.column_name === 'pymnt_status'" class="listing-status" [ngClass]="{'success':item?.brokerage_status_name == 'Completed', 'danger':item?.brokerage_status_name == 'Payment Due', 'warning':item?.brokerage_status_name == 'Running'}">
+                    <!-- {{ transactionStatuss[item?.pymnt_status]?.name }}  -->
+                    <!-- {{item[th.column_name]}}  -->
+                    {{item?.brokerage_status_name}}
+                  </span>
+
+                  <!-- payment mode -->
+                  <span *ngIf="th.column_name === 'payment_mode'">
+                    {{item?.payment_mode}}
+                  </span>
+
+                  <!-- reject_date -->
+                  <span *ngIf="th.column_name === 'reject_date'">
+                    {{item[th.column_name] | date:'dd MMM yyy'}}
+                  </span>
+
+                  <!-- Transaction ID  -->
+                  <span *ngIf="th.column_name === 'transaction_id'">
+                    {{item?.transaction?.dgr_transaction_id}}
+                  </span>
+
+                  <!-- pay_date  -->
+                  <span *ngIf="th.column_name === 'pay_date'">
+                    {{item[th.column_name] | date:'dd MMM yyy'}}
+                  </span>
+                  
+                  <!-- status -->
+                  <!-- <span *ngIf="th.column_name === 'Status' && item.id !== editStatusID" (click)="inlineStatusEdit(item.id)">{{ item.Status }}  </span>
+                  <span *ngIf="item.id == editStatusID">
+                    <span *ngIf="th.column_name === 'Status'">
+                        <select [(ngModel)]="item.Status">
+                          <option value="Pending">Pending</option>
+                          <option value="Review">Review</option>
+                          <option value="Completed">Completed</option>
+                        </select>
+                        <span>
+                          <button type="submit" (click)="inlineChangeSaveable(item.Status)" mat-icon-button color="primary" aria-label="Example icon-button with a done icon">
+                              <mat-icon>done</mat-icon>
+                          </button>
+                          <button (click)="inlineStatusEdit()" type="reset" mat-icon-button color="warn" aria-label="Example icon-button with a done icon">
+                            <mat-icon>clear</mat-icon>
+                          </button>
+                        </span>
+                      </span>
+                  </span> -->
+
+                  <!--all  common -->
+                  <span *ngIf="th.column_name !== 'lender' && th.column_name !== 'brrower' && th.column_name !== 'lgroup' && th.column_name !== 'bgroup' && th.column_name !== 'pymnt_status' && th.column_name !== 'transaction'  && th.column_name !== 'cycle_days' && th.column_name !== 'brokerage' && th.column_name !== 'interest_rate' && th.column_name !== 'reject_date' && th.column_name !== 'transaction_id' && th.column_name !== 'payment_mode' && th.column_name !== 'pay_date' && th.column_name !== 'total_amount'"> {{ item[th.column_name] }} </span>
+              </td>
+
+              <td class="action">
+
+                <!-- edit -->
+                <!-- <ion-button tooltip="Edit" flow="left" delay="500" [routerLink]="['/', 'add-recive-brokerage', 'edit', item.id]" (click)="clickItemHighlight(listAlldata.from + i)" *ngIf="(permissionArray[2]?.permission_access > 0 && (item.created_by == loggedin_user_id)) || permissionArray[2]?.permission_access == 4">
+                  <ion-icon name="create"></ion-icon>
+                </ion-button> -->
+
+                <!-- enable/disable button start -->
+                <!-- <ion-button color="success" tooltip="Enable" delay="500" (click)="enabledDisabled('single', item, '');" *ngIf="(permissionArray[2]?.permission_access > 0 && (item.created_by == loggedin_user_id))&& item.status == '1' || permissionArray[2]?.permission_access == 4 && item.status == '1'">
+                  <ion-icon name="eye"></ion-icon>
+                </ion-button>
+                <ion-button color="medium" tooltip="Disable" delay="500" (click)="enabledDisabled('single', item, '');" *ngIf="(permissionArray[2]?.permission_access > 0 && (item.created_by == loggedin_user_id)) && item.status == '0' || permissionArray[2]?.permission_access == 4 && item.status == '0' ">
+                  <ion-icon name="eye"></ion-icon>
+                </ion-button> -->
+                <!-- enable/disable button end -->
+
+                <!-- Deposit -->
+                <ion-button tooltip="Deposit" delay="500" (click)="openModal('brokerage_deposit', item, fetchItems);clickItemHighlight(listAlldata.from + i)" *ngIf="item?.brokerage_status_name != 'Completed'">
+                  <ion-icon name="md-calendar"></ion-icon>
+                </ion-button>
+
+                <!-- reject -->
+                <ion-button class="red-bg" tooltip="Add Reject Details" flow="left" delay="500" [routerLink]="['/', 'add-recive-brokerage', 'reject', item.id]" (click)="clickItemHighlight(listAlldata.from + i)">
+                  <ion-icon name="information-circle"></ion-icon>
+                </ion-button>
+
+              </td>
+          </tr>
+          <!-- [hidden]="fetchItems?.length > 0  -->
+          <tr [hidden]="!isListLoading" class="loading-table-data">
+            <td colspan="100">
+              <span style="font-size: 16px;">Data is loading...</span>
+            </td>
+          </tr>
+          <tr *ngIf="fetchItems?.length == 0 && !isListLoading" class="loading-table-data">
+            <td colspan="100">
+                No Data Found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- list data show in table format end -->
+  </div>
+  
+  <!-- pager start -->
+  <ion-row   [ngClass]="{'disabled':isListLoading}">
+    <ion-col size-xs="12" class="footer pull-left nomargin nopadding width-100">
+    <ul class="left-menu pull-left padding-left-0 margin-top-14">
+      <li (click)="onRefreshPage($event)" >
+        <ion-button class="background-orange" tooltip="Refresh" flow="right" delay="500">
+            <ion-icon name="refresh"></ion-icon>
+        </ion-button>
+
+        <!-- enable button status -->
+        <!-- <ion-button class="footer-list-button" color="success" tooltip="Enable" delay="500" [ngClass]="{'disabled':checkedList.length == 0}" (click)="enabledDisabled('multiple', '1', fetchItems);">
+          <ion-icon name="eye"></ion-icon>
+        </ion-button> -->
+
+        <!-- disable button status -->
+        <!-- <ion-button class="footer-list-button" color="medium" tooltip="Disable" delay="500" [ngClass]="{'disabled':checkedList.length == 0}" (click)="enabledDisabled('multiple', '0', fetchItems);">
+          <ion-icon name="eye"></ion-icon>
+        </ion-button> -->
+        <!-- enable/disable button end -->
+
+      </li>
+    </ul>
+    <ul *ngIf="pager.pages && pager.pages.length" class="pagination">
+        <li class="circle-border" [ngClass]="{disabled:pager.currentPage === 1}">
+            <a (click)="setPage(1)" tooltip="First" flow="up" delay="500">
+              <!-- First -->
+              <ion-icon name="skip-backward"></ion-icon>
+            </a>
+        </li>
+        <li class="circle-border" [ngClass]="{disabled:pager.currentPage === 1}">
+            <a (click)="setPage(pager.currentPage - 1)" tooltip="Previous" flow="up" delay="500">
+              <!-- Previous -->
+              <ion-icon name="arrow-dropleft-circle"></ion-icon>
+            </a>
+        </li>
+        <li> <span class="ran-separator pull-right margin-top-3"></span> </li>
+        <li>
+            Page <a>{{ pager.currentPage }}</a> of {{ pager.totalPages }} 
+        </li>
+        <li> <span class="ran-separator pull-right margin-top-3"></span> </li>
+        <li class="circle-border" [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+            <a (click)="setPage(pager.currentPage + 1)" tooltip="Next" flow="up" delay="500">
+              <!-- Next -->
+              <ion-icon name="arrow-dropright-circle"></ion-icon>
+            </a>
+        </li>
+        <li class="circle-border" [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+            <a (click)="setPage(pager.totalPages)" tooltip="Last" flow="up" delay="500">
+              <!-- Last -->
+              <ion-icon name="skip-forward"></ion-icon>
+            </a>
+        </li>
+    </ul>
+    </ion-col>
+  </ion-row>
+ <!-- pager end -->
+
+</ion-content>
+
+<!-- common footer show -->
+<common-footer></common-footer>

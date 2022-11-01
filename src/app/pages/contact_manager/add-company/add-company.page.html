@@ -1,0 +1,409 @@
+<!-- common header show -->
+<common-header></common-header>
+
+<ion-content class="page-wrapper">
+    <div class="page-inner">
+        <ion-row class="width-100 sub-header nomargin nopadding">
+            <ion-col size-xs="7" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+                <div class = "sub-header-color pull-left width-100 font-size-18 vertical-middle">
+                    <span>{{actionHeaderText}} Client</span>
+                </div>
+            </ion-col>
+            <ion-col size-xs="5" size-sm="6" class = "sub-header-item pull-left width-100 padding-10">
+                <div class = "sub-header-color width-100 text-right">
+                <span class="font-size-13"> {{curentDate | date:'dd MMM yyy'}} <i>|</i> {{curentDate | date:'h:mm a '}}</span>
+                </div>
+            </ion-col>
+        </ion-row>
+        <div class="add-new-page-body" [ngClass]="{'disabled': form_submit_text == 'Submitting'}">
+            
+            <!-- loading -->
+            <div class="edit-loading-page" *ngIf="editLoading">
+                <span>
+                    <ion-spinner name="lines"></ion-spinner>
+                </span>
+            </div>
+            
+            <form  #addForm="ngForm" (ngSubmit)="onSubmit(addForm)">
+                <div class="company-info">
+
+                    <input type="hidden" name="type" [(ngModel)]="onTypeField">
+                    <!-- for edit -->
+                    <input *ngIf="actionHeaderText == 'Edit'" type="hidden" name="_method" [(ngModel)]="onEditField">
+
+                    <!-- <div class="company-info-header">
+                        <ion-grid>
+                            <ion-row>
+                                <ion-col size-xs="12" size-sm="6">
+                                    <div class = "sub-header-color pull-left width-100 font-size-18 vertical-middle">
+                                        <span>Basic Informations</span>
+                                    </div>
+                                </ion-col>
+                                <ion-col size-xs="12" size-sm="6">
+                                    <div class = "sub-header-color width-100 text-right">
+                                        <span>
+                                            <i class="material-icons">keyboard_arrow_down</i>
+                                        </span>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </div> -->
+                    <div class="company-info-body">
+                        <ion-grid>
+                            <ion-row>
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                    <div>
+                                        <ion-label position="floating">Client<sup>*</sup></ion-label>
+                                        <ion-input name="name" [(ngModel)]="model.name" clearInput required></ion-input>
+                                    </div>
+                                </ion-col>
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                    <ion-label position="floating"> Group </ion-label>
+                                    <!-- <ion-label  tooltip="Add Group" flow="up" delay="500" class="add-button" >
+                                        <ion-icon name="add"></ion-icon>
+                                        Add
+                                    </ion-label> -->
+                                    <ng-select #groupSerch
+                                        [loading]="selectLoading"
+                                        [dropdownPosition]="'bottom'"
+                                        placeholder="Select One e.g. Group"
+                                        [items]="groupList"
+                                        bindLabel="name"
+                                        name="group_id"
+                                        bindValue="id"
+                                        (change)="onChange(model.group)"
+                                        [searchable]="false"
+                                        [(ngModel)]="model.group"
+                                        >
+                                        <ng-template ng-header-tmp>
+                                            <input placeholder="Search" class="dropdown-custom-search" type="text" (input)="groupSerch.filter($event.target.value)" [autofocus]="true" />
+                                        </ng-template>
+                                    </ng-select>
+                                </ion-col>
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                    <div>
+                                        <ion-label position="floating">Pan No. <sup>*</sup> </ion-label>
+                                        <ion-input name="pan_no" [(ngModel)]="model.pan_no" clearInput minlength="10"maxlength="10" required></ion-input>
+                                    </div>
+                                </ion-col>
+                                <!-- bank -->
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                    <div>
+                                        <ion-label position="floating">Bank Name<sup>*</sup> </ion-label>
+                                        <div>
+                                            <ion-input name="bank_name" [(ngModel)]="model.bank_name" clearInput required>
+                                            </ion-input>
+                                        </div>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </div>
+                </div>
+                <div class="company-info">
+                    <!-- <div class="company-info-header">
+                        <ion-grid>
+                            <ion-row>
+                                <ion-col size-xs="12" size-sm="6">
+                                    <div class = "sub-header-color pull-left width-100 font-size-18 vertical-middle">
+                                        <span>Address Details</span>
+                                    </div>
+                                </ion-col>
+                                <ion-col size-xs="12" size-sm="6">
+                                    <div class = "sub-header-color width-100 text-right">
+                                        <span>
+                                            <i class="material-icons">keyboard_arrow_down</i>
+                                        </span>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </div> -->
+                    <div class="company-info-body" style="border: none">
+                        <ion-grid>
+                            <ion-row>
+                                <!-- <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                    <div>
+                                        <ion-label position="floating">Address <sup>*</sup> </ion-label>
+                                        <ion-input name="address" [(ngModel)]="model.address_1" clearInput required></ion-input>
+                                    </div>
+                                </ion-col>
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                    <div>
+                                        <ion-label position="floating">Country <sup>*</sup> </ion-label>
+                                        <ion-input name="country" [(ngModel)]="model.countrys" clearInput required></ion-input>
+                                    </div>
+                                </ion-col>
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                    <div>
+                                        <ion-label position="floating">State <sup>*</sup></ion-label>
+                                        <ion-input name="state" [(ngModel)]="model.state" placeholder="Search State" clearInput required></ion-input>
+                                    </div>
+                                </ion-col>
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                    <div>
+                                        <ion-label position="floating">City <sup>*</sup> </ion-label>
+                                        <ion-input name="city" [(ngModel)]="model.city" placeholder="Search City" clearInput required></ion-input>
+                                    </div>
+                                </ion-col>
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                    <div>
+                                        <ion-label position="floating">Pin <sup>*</sup> </ion-label>
+                                        <ion-input OnlyNumber="true" name="pin" [(ngModel)]="model.pin" clearInput minlength="6"maxlength="6" required></ion-input>
+                                    </div>
+                                </ion-col>
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                    <div>
+                                        <ion-label position="floating">Phone <sup>*</sup> </ion-label>
+                                        <ion-input OnlyNumber="true" type="tel" minlength="10"maxlength="10" name="phone" [(ngModel)]="model.phone" clearInput required></ion-input>
+                                    </div>
+                                </ion-col>
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                    <div>
+                                        <ion-label position="floating">Email <sup>*</sup> </ion-label>
+                                        <ion-input type="email" name="email" [(ngModel)]="model.email" clearInput  (ionBlur)="uniquEmailCheck(model.email)" [ngClass]="{'ion-invalid': checkEmailError}" email required></ion-input>
+                                    </div>
+                                </ion-col> -->
+                                
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                    <div>
+                                        <ion-label position="floating">Branch Name <sup>*</sup> </ion-label>
+                                        <div>
+                                            <ion-input  name="branch_name" [(ngModel)]="model.branch_name" clearInput required>
+                                            </ion-input>
+                                        </div>
+                                    </div>
+                                </ion-col>
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                    <div>
+                                        <ion-label position="floating">Bank A/C<sup>*</sup> </ion-label>
+                                        <div>
+                                            <ion-input OnlyNumber="true" type="tel" name="bank_acc" [(ngModel)]="model.bank_acc" clearInput required>
+                                            </ion-input>
+                                        </div>
+                                    </div>
+                                </ion-col>
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                    <div>
+                                        <ion-label position="floating"> IFSC Code<sup>*</sup> </ion-label>
+                                        <div>
+                                            <ion-input minlength="11" maxlength="11" name="ifsc_code" [(ngModel)]="model.ifsc_code" clearInput required>
+                                            </ion-input>
+                                        </div>
+                                    </div>
+                                </ion-col>
+                                <ion-col size-xs="12" size-sm="6" size-md="4"  size-lg="3">
+                                    <div>
+                                        <ion-label position="floating"> GSTIN</ion-label>
+                                        <div>
+                                            <ion-input minlength="15" maxlength="15" name="gstin" [(ngModel)]="model.gstin" clearInput >
+                                            </ion-input>
+                                        </div>
+                                    </div>
+                                </ion-col>
+                                <!-- <ion-col size-xs="4" size-sm="4" size-md="3"  size-lg="2">
+                                    <div class="toggle-button">
+                                        <ion-label>SMS</ion-label>
+                                        <ion-label>
+                                            <p class="onoff"><input type="checkbox" value="1" id="checkboxID2" name="send_sms" [(ngModel)]="model.sms"><label for="checkboxID2"></label></p>
+                                        </ion-label>
+                                    </div>
+                                </ion-col>
+                                <ion-col size-xs="4" size-sm="4" size-md="3"  size-lg="2">
+                                    <div class="toggle-button">
+                                        <ion-label>Email</ion-label>
+                                        <ion-label>
+                                            <p class="onoff"><input type="checkbox" value="1" id="checkboxID3" name="send_email" [(ngModel)]="model.emailcheck"><label for="checkboxID3"></label></p>
+                                        </ion-label>
+                                    </div>
+                                </ion-col> -->
+                            </ion-row>
+                            <ion-row>
+                                <ion-col size-xs="4" size-sm="4" size-md="3"  size-lg="2">
+                                    <div class="toggle-button">
+                                        <ion-label>TDS Liability</ion-label>
+                                        <ion-label>
+                                            <p class="onoff"><input type="checkbox" value="0" id="checkboxID4" name="tds_amt" [(ngModel)]="model.tds"><label for="checkboxID4"></label></p>
+                                        </ion-label>
+                                    </div>
+                                </ion-col>
+                                <ion-col size-xs="4" size-sm="4" size-md="3"  size-lg="2">
+                                    <div class="toggle-button">
+                                        <ion-label>15G Liability</ion-label>
+                                        <ion-label>
+                                            <p class="onoff"><input type="checkbox" value="1" id="checkboxID5" name="g15" [(ngModel)]="model.fifteeng"><label for="checkboxID5"></label></p>
+                                        </ion-label>
+                                    </div>
+                                </ion-col> 
+                                
+                                <!-- Enable -->
+                                <ion-col size-xs="4" size-sm="4" size-md="3"  size-lg="2">
+                                    <div class="toggle-button">
+                                        <ion-label>Enable</ion-label>
+                                        <ion-label>
+                                            <p class="onoff"><input type="checkbox" value="1" id="checkboxID" name="status" [(ngModel)]="model.enable"><label for="checkboxID"></label></p>
+                                        </ion-label>
+                                    </div>
+                                </ion-col>
+
+                                <!-- <ion-col size-xs="4" size-sm="4" size-md="3"  size-lg="2" [hidden]="!model.group">
+                                    <div class="toggle-button ">
+                                        <ion-label>Group Admin</ion-label>
+                                        <ion-label>
+                                            <p class="onoff"><input type="checkbox" value="1" id="checkboxID6" name="group_admin" [(ngModel)]="model.group_admin"><label for="checkboxID6"></label></p>
+                                        </ion-label>
+                                    </div>
+                                </ion-col> --> 
+                            </ion-row>
+                        </ion-grid>
+                    </div>
+                </div>
+                <!-- <div class="company-info">
+                    <div class="company-info-header">
+                        <ion-grid>
+                            <ion-row>
+                                <ion-col size-xs="12" size-sm="6">
+                                    <div class = "sub-header-color pull-left width-100 font-size-18 vertical-middle">
+                                        <span>Contact Informations</span>
+                                    </div>
+                                </ion-col>
+                                <ion-col size-xs="12" size-sm="6">
+                                    <div class = "sub-header-color width-100 text-right">
+                                        <span>
+                                            <i class="material-icons">keyboard_arrow_down</i>
+                                        </span>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </div>
+                    <div class="company-info-body">
+                        <ion-grid>
+                            <ion-row>
+                                <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="6">
+                                    <ion-grid>
+                                        <ion-row>
+                                            <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                                                <ion-label position="floating"> Phone  </ion-label>
+                                                <ng-select #phoneSerch
+                                                    [loading]="selectLoadingDepend"
+                                                    [dropdownPosition]="'bottom'"
+                                                    placeholder="Please Select Phone"
+                                                    [items]="contact_by_company"
+                                                    bindLabel="full_name"
+                                                    name="phone"
+                                                    bindValue="id"
+                                                    (change)="onChange(model.phone)"
+                                                    [searchable]="false"
+                                                    [(ngModel)]="model.phone">
+                                                    <ng-template ng-header-tmp>
+                                                        <input placeholder="Search" class="dropdown-custom-search" type="text" (input)="phoneSerch.filter($event.target.value)" [autofocus]="true" />
+                                                    </ng-template>
+                                                </ng-select>
+                                            </ion-col>
+                                            <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                                                <div>
+                                                    <ion-label position="floating">Your Contact No </ion-label>
+                                                    <ion-input name="contact_no" [(ngModel)]="model.contact_no" clearInput ></ion-input>
+                                                </div>
+                                            </ion-col>
+                                            <ion-col size-xs="6" size-sm="6" size-md="3"  size-lg="3">
+                                                <div class="default-checkbox">
+                                                    <ion-checkbox checked="true"></ion-checkbox>
+                                                    Default
+                                                </div>
+                                            </ion-col>
+                                            <ion-col size-xs="6" size-sm="6" size-md="3"  size-lg="3">
+                                                <div class="add-address-btn">
+                                                    <ion-button color="warning" size="small">
+                                                        <ion-icon ios="ios-add" md="md-add"></ion-icon>
+                                                    </ion-button>
+                                                </div>
+                                            </ion-col>
+                                        </ion-row>
+                                    </ion-grid>
+                                </ion-col>
+                                <ion-col size-xs="12" size-sm="6" size-md="6"  size-lg="6">
+                                    <ion-grid>
+                                        <ion-row>
+                                            <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                                                <ion-label position="floating"> Email  </ion-label>
+                                                <ng-select #emailSerch
+                                                    [loading]="selectLoadingDepend"
+                                                    [dropdownPosition]="'bottom'"
+                                                    placeholder="Please Select Email"
+                                                    [items]="contact_by_company"
+                                                    bindLabel="full_name"
+                                                    name="email"
+                                                    bindValue="id"
+                                                    (change)="onChange(model.email)"
+                                                    [searchable]="false"
+                                                    [(ngModel)]="model.email">
+                                                    <ng-template ng-header-tmp>
+                                                        <input placeholder="Search" class="dropdown-custom-search" type="text" (input)="emailSerch.filter($event.target.value)" [autofocus]="true" />
+                                                    </ng-template>
+                                                </ng-select>
+                                            </ion-col>
+                                            <ion-col size-xs="12" size-sm="6" size-md="3"  size-lg="3">
+                                                <div>
+                                                    <ion-label position="floating">Type Your Email Id </ion-label>
+                                                    <ion-input name="email_id" [(ngModel)]="model.email_id" clearInput ></ion-input>
+                                                </div>
+                                            </ion-col>
+                                            <ion-col size-xs="6" size-sm="6" size-md="3"  size-lg="3">
+                                                <div class="default-checkbox">
+                                                    <ion-checkbox checked="true"></ion-checkbox>
+                                                    Default
+                                                </div>
+                                            </ion-col>
+                                            <ion-col size-xs="6" size-sm="6" size-md="3"  size-lg="3">
+                                                <div class="add-address-btn">
+                                                    <ion-button color="warning" size="small">
+                                                        <ion-icon ios="ios-add" md="md-add"></ion-icon>
+                                                    </ion-button>
+                                                </div>
+                                            </ion-col>
+                                        </ion-row>
+                                    </ion-grid>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </div> 
+                </div> -->
+                <div class="form-button-section">
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col class="ion-text-center" size-xs="12" size-sm="12" size-md="12"  size-lg="12">
+                                <ion-button color="danger" size="default" tooltip="Reload" (click)="reloadPageAlert()">
+                                    Reload
+                                </ion-button>
+                                <ion-button [ngClass]="{'button-disabled': checkEmailError && !addForm.valid}" (click)="clickButtonType('Save')" color="secondary" size="default"
+                                type="submit" [disabled]="!addForm.valid " 
+                                color="secondary" tooltip="Save" flow="up">
+                                    <ion-spinner *ngIf="form_submit_text_save == 'Submitting'" name="crescent"></ion-spinner> 
+                                    <span class="submitText">{{form_submit_text_save}}</span>
+                                </ion-button>
+                                <ion-button [ngClass]="{'button-disabled': checkEmailError && !addForm.valid}" (click)="clickButtonType('Save-add-another')" color="secondary" size="default"
+                                    type="submit" [disabled]="!addForm.valid " 
+                                    color="secondary" tooltip="Save & Add Another" flow="up">
+                                    <ion-spinner *ngIf="form_submit_text_save_another == 'Submitting'" name="crescent"></ion-spinner> 
+                                    <span class="submitText">
+                                        <span class="submitText">{{form_submit_text_save_another}}</span>
+                                    </span>
+                                </ion-button>
+                                <ion-button size="default" fill="clear" color="danger" tooltip="Cancel" flow="up" [routerLink]="['/', 'client-list']">
+                                    <ion-icon name="close"></ion-icon>
+                                    Cancel
+                                </ion-button>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </div>
+            </form>
+        </div>
+    </div>
+</ion-content>
+
+<!-- common footer show -->
+<common-footer></common-footer>
